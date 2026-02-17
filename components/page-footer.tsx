@@ -12,7 +12,7 @@ export const PageFooter = () => {
       <span>
         Source code on{" "}
         <Link
-          href="https://github.com/diip3sh/portfolio-diip3sh"
+          href="https://github.com/diip3sh/portfolio"
           target="_blank"
           rel="noopener noreferrer"
           className="underline font-bold uppercase tracking-normal font-mono hover:text-primary transition-colors"

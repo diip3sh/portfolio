@@ -1,4 +1,4 @@
-# [diip3sh.xyz](https://diip3sh.xyz) &middot; ![GitHub Repo Views](https://gitviews.com/repo/diip3sh/portfolio-diip3sh.svg)
+# [diip3sh.xyz](https://diip3sh.xyz) &middot; ![GitHub Repo Views](https://gitviews.com/repo/diip3sh/portfolio.svg)
 
 A modern, pixel-perfect portfolio showcasing design engineering work, featuring clean animations, accessibility-first design, and performance-optimized components.
 
