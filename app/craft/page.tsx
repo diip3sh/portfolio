@@ -33,13 +33,13 @@ const CraftGridOne = () => {
 const CraftGridTwo = () => {
   return (
     <div className="flex flex-col gap-12">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 bg-red-500">
+      <div className="grid grid-cols-1 gap-6">
         {[...craftData]
           .sort((a, b) => b.id - a.id)
           .map((item) => (
             <div
               key={item.id}
-              className="flex flex-col rounded-xl border border-border h-15"
+              className="flex flex-col rounded-xl border border-border"
             >
               <div className="relative p-1.5">
                 <div className="relative aspect-video w-full overflow-hidden rounded-lg bg-muted shadow-sm">
