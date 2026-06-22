@@ -23,7 +23,7 @@ export const HomeHobbiesSection = () => {
             ]}
             imageAlt={["The Bear", "Netflix", "Breaking Bad"]}
           >
-            bing watching film and tv series
+            binge watching film and tv series
           </HoverTextPreview>
           ,{" "}
           <HoverTextPreview

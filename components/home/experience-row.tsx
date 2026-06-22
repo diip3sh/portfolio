@@ -1,5 +1,3 @@
-"use client"
-
 import { SeparatorDot } from "@/components/portfolio/separator-dot"
 import type { Experience } from "@/constants/types"
 
