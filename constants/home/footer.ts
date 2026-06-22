@@ -2,6 +2,10 @@ import { ProjectGalleryVideo } from "../types"
 
 export const FooterBuildStack: ProjectGalleryVideo[] = [
   {
+    name: "Motion",
+    href: "https://motion.dev/"
+  },
+  {
     name: "Commit Mono",
     href: "https://commitmono.com/",
   },
