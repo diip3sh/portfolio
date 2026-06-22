@@ -21,6 +21,7 @@ import { portfolioSocialLinks } from "@/constants/portfolio/social"
 export const HomeLeftColumn = () => {
   return (
     <ScrollColumn
+      ariaLabel="Portfolio information"
       className="w-full bg-absolute-black md:h-dvh md:w-1/2 lg:w-1/3"
       contentClassName="flex w-full flex-col items-center gap-framer-9 px-framer-5 pt-20 pb-framer-5 md:gap-framer-10 md:pt-framer-5 md:pr-10 md:pb-framer-5"
       showProgress

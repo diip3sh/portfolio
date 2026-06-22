@@ -5,6 +5,7 @@ import { useRef, type ReactNode } from "react"
 import { ScrollProgress } from "@/components/portfolio/scroll-progress"
 
 type ScrollColumnProps = {
+  ariaLabel: string
   children: ReactNode
   className?: string
   contentClassName?: string
@@ -12,6 +13,7 @@ type ScrollColumnProps = {
 }
 
 export const ScrollColumn = ({
+  ariaLabel,
   children,
   className = "",
   contentClassName = "",
@@ -22,7 +24,10 @@ export const ScrollColumn = ({
   return (
     <div
       ref={scrollRef}
-      className={`no-scrollbar relative md:overflow-y-auto ${className}`}
+      role="region"
+      aria-label={ariaLabel}
+      tabIndex={0}
+      className={`relative no-scrollbar focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gallery-white md:overflow-y-auto ${className}`}
     >
       {showProgress ? (
         <>

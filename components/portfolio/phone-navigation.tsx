@@ -35,11 +35,7 @@ export const PhoneNavigation = ({
       aria-label="Page sections"
       className={`fixed top-3 left-1/2 z-20 -translate-x-1/2 ${className}`}
     >
-      <div
-        role="tablist"
-        aria-label="Page sections"
-        className="relative flex items-center rounded-pill bg-dark-gray/40 p-framer-1"
-      >
+      <div className="relative flex items-center rounded-pill bg-dark-gray/40 p-framer-1">
         {sections.map((section) => {
           const isActive = activeId === section.id
 
@@ -47,13 +43,9 @@ export const PhoneNavigation = ({
             <button
               key={section.id}
               type="button"
-              role="tab"
-              id={`tab-${section.id}`}
-              aria-selected={isActive}
-              aria-controls={section.id}
-              tabIndex={isActive ? 0 : -1}
+              aria-current={isActive ? "location" : undefined}
               onClick={() => scrollToSection(section.id)}
-              className={`rounded-pill px-5 py-2 type-label font-medium transition-colors duration-portfolio ease-portfolio focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-gallery-white ${
+              className={`duration-portfolio rounded-pill px-5 py-2 type-label font-medium transition-colors ease-portfolio focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-gallery-white ${
                 isActive
                   ? "bg-portfolio-emphasis text-portfolio-emphasis-foreground"
                   : "text-gallery-white opacity-65"

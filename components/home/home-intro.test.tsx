@@ -37,4 +37,13 @@ describe("HomeIntroSection contact actions", () => {
     expect(bookingLink).toHaveAttribute("rel", "noopener noreferrer")
     expect(bookingLink.className).toContain("max-w-48")
   })
+
+  it("isolates the external company link", () => {
+    render(<HomeIntroSection intro={mockIntro} />)
+
+    const companyLink = screen.getByRole("link", { name: /portdex/i })
+
+    expect(companyLink).toHaveAttribute("target", "_blank")
+    expect(companyLink).toHaveAttribute("rel", "noopener noreferrer")
+  })
 })

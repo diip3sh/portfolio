@@ -53,6 +53,7 @@ export const HomeIntroSection = ({ intro }: HomeIntroSectionProps) => {
         <Link
           href={"https://www.linkedin.com/company/portdex/"}
           target="_blank"
+          rel="noopener noreferrer"
           className="inline-flex items-center gap-1.5 align-middle decoration-muted-foreground decoration-dotted underline-offset-4"
         >
           <CompanySVG size={16} />

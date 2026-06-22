@@ -4,6 +4,13 @@ import { useMotionValue, animate, motion } from 'motion/react';
 import { useState, useEffect } from 'react';
 import useMeasure from 'react-use-measure';
 
+const DEFAULT_SPEED = 100;
+
+const isPositiveFiniteSpeed = (
+  value: number | undefined,
+): value is number =>
+  typeof value === 'number' && Number.isFinite(value) && value > 0;
+
 export type InfiniteSliderProps = {
   children: React.ReactNode;
   gap?: number;
@@ -17,14 +24,19 @@ export type InfiniteSliderProps = {
 export function InfiniteSlider({
   children,
   gap = 16,
-  speed = 100,
+  speed = DEFAULT_SPEED,
   speedOnHover,
   direction = 'horizontal',
   reverse = false,
   className,
 }: InfiniteSliderProps) {
   const [isHovering, setIsHovering] = useState(false);
-  const currentSpeed = isHovering && speedOnHover ? speedOnHover : speed;
+  const validatedSpeed = isPositiveFiniteSpeed(speed) ? speed : DEFAULT_SPEED;
+  const validatedHoverSpeed = isPositiveFiniteSpeed(speedOnHover)
+    ? speedOnHover
+    : null;
+  const currentSpeed =
+    isHovering && validatedHoverSpeed ? validatedHoverSpeed : validatedSpeed;
   const [ref, { width, height }] = useMeasure();
   const translation = useMotionValue(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
@@ -78,7 +90,7 @@ export function InfiniteSlider({
     reverse,
   ]);
 
-  const hoverProps = speedOnHover
+  const hoverProps = validatedHoverSpeed
     ? {
         onHoverStart: () => {
           setIsTransitioning(true);
@@ -106,7 +118,9 @@ export function InfiniteSlider({
         {...hoverProps}
       >
         {children}
-        {children}
+        <div aria-hidden="true" className="contents" inert>
+          {children}
+        </div>
       </motion.div>
     </div>
   );

@@ -16,6 +16,7 @@ export const HomeRightColumn = ({
 }: HomeRightColumnProps) => {
   return (
     <ScrollColumn
+      ariaLabel="Project gallery"
       className="w-full bg-absolute-black md:h-dvh md:w-1/2 lg:w-2/3"
       contentClassName="flex w-full flex-col items-center gap-framer-10 px-framer-5 pt-[17px] pb-framer-10 md:pr-framer-5 md:pb-framer-5 md:pl-0"
       showProgress={false}

@@ -23,6 +23,7 @@ export const StackRow = ({
           <Link
             href={link}
             target="_blank"
+            rel="noopener noreferrer"
             aria-label={`${name} details`}
             className={`${className} flex size-10 items-center justify-center rounded-sm focus-visible:ring-2 focus-visible:ring-ring`}
             {...tooltipTriggerProps}
