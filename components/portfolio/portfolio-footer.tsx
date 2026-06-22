@@ -116,9 +116,8 @@ export const PortfolioFooter = ({
             <p className="text-muted-foreground">Inspired by</p>
             <div className="col-span-2 flex flex-col gap-1.5 underline-offset-4">
               {[
-                "https://chanhdai.com",
-                "https://gurbinder.dev",
                 "https://ana.sh",
+                "https://www.jkane.co",
               ].map((item) => (
                 <Link
                   href={item}
