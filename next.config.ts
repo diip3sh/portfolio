@@ -1,6 +1,20 @@
 import type { NextConfig } from "next"
 
 const nextConfig: NextConfig = {
+  async redirects() {
+    return [
+      {
+        source: "/apple-touch-icon.png",
+        destination: "/logo.png",
+        permanent: true,
+      },
+      {
+        source: "/apple-touch-icon-precomposed.png",
+        destination: "/logo.png",
+        permanent: true,
+      },
+    ]
+  },
   images: {
     deviceSizes: [360, 480, 640, 750, 828, 1080, 1200, 1600],
     formats: ["image/webp"],
