@@ -1,114 +1,76 @@
-# [diip3sh.xyz](https://diip3sh.xyz) &middot; ![GitHub Repo Views](https://gitviews.com/repo/diip3sh/portfolio.svg)
+# New Portfolio
 
-A modern, pixel-perfect portfolio showcasing design engineering work, featuring clean animations, accessibility-first design, and performance-optimized components.
+A precise portfolio for a multidisciplinary designer, frontend developer, and creative engineer. Visitors — recruiters, design clients, and engineering clients — assess the quality of work, range of disciplines, and fit for a role or project. Success means visitors evaluate with confidence, remember the portfolio, and find a clear path to make contact.
 
-→ Check out the live site: [diip3sh.xyz](https://diip3sh.xyz/)
+## Preview
 
-[![Portfolio Screenshot](https://i.ibb.co/Mbfdr7M/SCR-20260118-pncy.png)](https://diip3sh.netlify.app)
+![Portfolio home page](docs/screenshots/home.png)
 
-## Overview
+## Stack
 
-### Stack
+- **Framework:** Next.js 16 (App Router)
+- **UI:** React 19, TypeScript, Tailwind CSS 4, Motion, shadcn/Base UI
+- **Package manager:** Bun
 
-- Next.js 16
-- React 19
-- TypeScript
-- Tailwind CSS v4
-- shadcn/ui
-- Motion (Framer Motion)
+## Prerequisites
 
-### Featured
+- [Bun](https://bun.sh) ≥ 1.3.14
 
-- **Clean & Modern Design**: Minimalist aesthetic with custom dithering backgrounds and corner shapes
-- **Accessibility-First**: Full keyboard navigation, focus management, screen reader support, and reduced motion preferences
-- **Performance Optimized**: Hardware-accelerated animations, lazy loading, and optimized images
-- **Responsive & Mobile-First**: Seamless experience across all devices with touch-friendly interactions
-- **Type-Safe Architecture**: Strict TypeScript with comprehensive interfaces and type guards
-- **SEO Optimized**: Rich metadata, Open Graph images, and structured data for better discoverability
-- **Component Registry**: Reusable UI primitives built with shadcn/ui patterns
-- **Animation System**: Custom easing curves, transform-based animations, and motion preferences
+## Getting started
 
-### Portfolio Sections
-
-- **Home**: Hero section with work experience, skills overview, and recent features
-- **Work**: Detailed showcase of professional projects and contributions
-- **Craft**: Design principles, development philosophy, and creative process
-
-### Component Architecture
-
-A comprehensive component library featuring:
-
-- **UI Primitives**: Text components, buttons, accordions, and image showcases
-- **Layout Components**: Container, navbar, footer with responsive navigation
-- **Specialized Components**: Work experience cards, infinite scroll containers, and animated elements
-- **Data-Driven**: Typed data modules for content management and easy updates
-
-## Development
-
-### Environment Setup
-
-1. **Prerequisites**
-   - [bun](https://bun.sh/) and [pnpm](https://pnpm.io/) (pnpm preferred for scripts despite Bun's lockfile)
-   - Node.js 18+
-
-2. **Installation**
-   ```bash
-   pnpm install
-   ```
-
-3. **Development**
-   ```bash
-   pnpm dev          # Start development server
-   pnpm build        # Build for production
-   pnpm start        # Start production server
-   pnpm lint         # Run linting
-   pnpm format       # Format code with Biome
-   ```
-
-### Project Structure
-
-```
-├── app/                    # Next.js App Router pages
-│   ├── layout.tsx         # Root layout with metadata
-│   ├── page.tsx          # Home page
-│   ├── work/page.tsx     # Work showcase
-│   └── craft/page.tsx    # Craft & philosophy
-├── components/            # React components
-│   ├── ui/               # Reusable UI primitives
-│   ├── container.tsx     # Layout container
-│   ├── navbar.tsx        # Navigation component
-│   └── work-*.tsx        # Work-related components
-├── lib/
-│   ├── data/             # Typed content data
-│   ├── svg/              # Inline SVG components
-│   └── utils.ts          # Utility functions
-└── public/               # Static assets
+```bash
+bun install --frozen-lockfile
+bun run dev
 ```
 
-### Key Concepts
+## Commands
 
-- **Data Modules**: Typed TypeScript interfaces for content management
-- **Component Composition**: Modular, reusable components following shadcn/ui patterns
-- **Animation System**: CSS-based animations with custom easing and motion preferences
-- **Accessibility**: WCAG compliant with keyboard navigation and screen reader support
-- **Performance**: Optimized images, lazy loading, and hardware-accelerated animations
+| Command | Description |
+|---|---|
+| `bun run dev` | Start the development server |
+| `bun run build` | Production build |
+| `bun run start` | Serve the production build |
+| `bun run lint` | Lint with oxlint |
+| `bun run typecheck` | Type-check with `tsc --noEmit` |
+| `bun run test` | Run tests with vitest |
+| `bun run test:watch` | Run tests in watch mode |
+| `bun run check` | Lint + typecheck + test (CI gate) |
 
-## License
+## Architecture
 
-Licensed under the [MIT license](./LICENSE).
+```
+app/                     # Next.js App Router pages and layouts
+components/
+  home/                  # Home page sections
+  portfolio/             # Portfolio gallery components
+  project/               # Project detail components
+  showcase/              # Interactive showcase components
+  ui/                    # Shared UI primitives (shadcn/Base UI)
+constants/
+  portfolio/             # Project metadata, contact info, social links
+  types.ts               # Shared TypeScript types
+public/
+  showcase-prompts/      # Static prompt assets for showcase components
+PRODUCT.md               # Product goals, audience, and success criteria
+DESIGN.md                # Design system tokens, typography, and rules
+AGENTS.md                # Agent instructions and coding conventions
+```
 
-You're free to use my code! Just make sure to <ins>remove all my personal information</ins> before publishing your website. It's awesome to see my code being useful to someone!
+## Content editing
 
-## Acknowledgments
+- **Project and showcase metadata:** edit `constants/portfolio/projects.ts`. Each entry defines slug, title, media, and type.
+- **Showcase prompt bodies:** static assets in `public/showcase-prompts/`. Treat prompt text as untrusted user-facing content — do not interpolate into active code paths.
+- **Contact and social links:** edit `constants/portfolio/contact.ts` and `constants/portfolio/social.ts`.
 
-- [React](https://react.dev)
-- [Next.js](https://nextjs.org)
-- [TypeScript](https://www.typescriptlang.org)
-- [Tailwind CSS](https://tailwindcss.com)
-- [shadcn/ui](https://ui.shadcn.com)
-- [Motion](https://motion.dev)
-- [Radix UI](https://www.radix-ui.com)
-- [Base UI](https://base-ui.com)
-- [HugeIcons](https://hugeicons.com)
-- [Paper Design Shaders](https://paper.design)
-- And many other open-source libraries used in `package.json`
+## Verification before a PR
+
+```bash
+bun run check      # lint + typecheck + tests
+bun run build      # production build
+```
+
+Both must pass. Documentation-only changes should still pass the full gate to confirm nothing else broke.
+
+## Deployment
+
+Standard Next.js production build (`bun run build` followed by `bun run start`). No provider-specific configuration is required.

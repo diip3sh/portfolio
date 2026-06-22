@@ -1,81 +1,57 @@
-import type { Metadata } from "next";
-import { Geist, JetBrains_Mono } from "next/font/google";
-import "./globals.css";
-import { Dithering } from "@paper-design/shaders-react";
-import { Analytics } from "@vercel/analytics/next";
-import Footer from "@/components/footer";
-import Navbar from "@/components/navbar";
-import { cn } from "@/lib/utils";
+import { Geist, Instrument_Serif } from "next/font/google"
+import localFont from "next/font/local"
+import type { Metadata, Viewport } from "next"
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const jetBrainsMono = JetBrains_Mono({
-  variable: "--font-jet-brains-mono",
-  subsets: ["latin"],
-});
-
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://diip3sh.xyz";
-const openGraphImage = "/og.png";
+import "./globals.css"
+import { ThemeProvider } from "@/components/theme-provider"
+import { cn } from "@/lib/utils"
+import { TooltipProvider } from "@/components/ui/tooltip"
+import { Toaster } from "@/components/ui/sonner"
+import {
+  DEFAULT_SOCIAL_IMAGE,
+  SITE_DESCRIPTION,
+  SITE_LOCALE,
+  SITE_NAME,
+  SITE_TITLE,
+  SITE_URL,
+  X_HANDLE,
+} from "@/lib/seo"
 
 export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
+  metadataBase: SITE_URL,
   title: {
-    default: "Design & Frontend Engineer",
-    template: "%s | diip3sh",
+    default: SITE_TITLE,
+    template: `%s | ${SITE_NAME}`,
   },
-  description:
-    "diip3sh is a Design & Frontend Engineer with 3+ years of experience building high-performance web and mobile applications. Specialized in React, Next.js, TypeScript, React Native, and AI-driven platforms with a strong focus on UX, accessibility, and performance.",
-  keywords: [
-    "diip3sh",
-    "Design Engineer",
-    "Frontend Engineer",
-    "Design & Frontend Engineer",
-    "React Developer",
-    "Next.js Developer",
-    "TypeScript",
-    "React Native",
-    "UI Engineering",
-    "UX Engineering",
-    "AI Marketplace",
-    "Web Performance",
-    "Accessibility",
-    "AWS",
-    "Serverless Applications",
-    "Portfolio",
-  ],
-  authors: [
-    {
-      name: "diip3sh",
-      url: siteUrl,
-    },
-  ],
-  applicationName: "diip3sh Portfolio",
+  description: SITE_DESCRIPTION,
+  applicationName: SITE_NAME,
+  authors: [{ name: SITE_NAME, url: SITE_URL }],
+  creator: SITE_NAME,
+  publisher: SITE_NAME,
+  alternates: {
+    canonical: "/",
+  },
   icons: {
     icon: "/favicon.ico",
     shortcut: "/favicon.ico",
+    apple: "/logo.png",
   },
   openGraph: {
-    title: "diip3sh — Design & Frontend Engineer",
-    description:
-      "Design & Frontend Engineer building scalable, user-centric web and mobile apps using React, Next.js, TypeScript, and React Native. Experience across AI platforms, fintech, and cloud-native systems.",
-    url: siteUrl,
-    siteName: "diip3sh Portfolio",
     type: "website",
-    locale: "en_US",
-    images: [
-      {
-        url: openGraphImage,
-        width: 512,
-        height: 512,
-        alt: "diip3sh — Design & Frontend Engineer Portfolio",
-      },
-    ],
+    locale: SITE_LOCALE,
+    url: "/",
+    siteName: SITE_NAME,
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
+    images: [DEFAULT_SOCIAL_IMAGE],
   },
   twitter: {
-    images: [openGraphImage],
+    card: "summary_large_image",
+    site: X_HANDLE,
+    creator: X_HANDLE,
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
+    images: [DEFAULT_SOCIAL_IMAGE],
   },
   robots: {
     index: true,
@@ -83,58 +59,83 @@ export const metadata: Metadata = {
     googleBot: {
       index: true,
       follow: true,
-      "max-video-preview": -1,
       "max-image-preview": "large",
       "max-snippet": -1,
+      "max-video-preview": -1,
     },
   },
-  alternates: {
-    canonical: "/",
-  },
-};
+}
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#000000" },
+  ],
+}
+
+const fontSans = Geist({
+  subsets: ["latin"],
+  variable: "--font-sans",
+})
+
+const commitMono = localFont({
+  src: [
+    {
+      path: "../public/fonts/CommitMono-400-Regular.otf",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "../public/fonts/CommitMono-500-Regular.otf",
+      weight: "500",
+      style: "normal",
+    },
+  ],
+  variable: "--font-mono",
+})
+
+const instrumentSerif = Instrument_Serif({
+  subsets: ["latin"],
+  variable: "--font-instrument-serif",
+  weight: "400",
+})
 
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${jetBrainsMono.variable} antialiased font-mono`}
-      >
-        <a
-          href="#main-content"
-          className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:p-4 focus:bg-background focus:text-foreground"
-        >
-          Skip to content
-        </a>
-        <div className="flex flex-col min-h-screen px-3">
-          <Dithering
-            colorBack="#e5e5e5"
-            colorFront="#ff6a00"
-            shape="wave"
-            type="8x8"
-            size={2.2}
-            speed={0.86}
-            scale={0.68}
-            className="absolute top-0 left-0 w-full h-screen -z-10 opacity-20 dithering-effect"
-          />
-          <Navbar />
-          <div
-            id="main-content"
-            className={cn(
-              "bg-background overflow-auto rounded-[25px] corner-squircle",
-              "shadow-[0px_4px_16px_rgba(17,17,26,0.1),0px_8px_24px_rgba(17,17,26,0.1),0px_16px_56px_rgba(17,17,26,0.1)]",
-            )}
-            style={{ height: `calc(100dvh - 120px)` }}
-          >
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={cn(
+        "no-scrollbar antialiased",
+        fontSans.variable,
+        "font-mono",
+        commitMono.variable,
+        instrumentSerif.variable
+      )}
+    >
+      <body>
+        <ThemeProvider>
+          <TooltipProvider>
             {children}
-            <Analytics />
-          </div>
-          <Footer />
-        </div>
+            <Toaster
+              toastOptions={{
+                style: {
+                  width: "fit-content",
+                  padding: "10px 20px",
+                },
+              }}
+              position="bottom-left"
+              richColors
+            />
+          </TooltipProvider>
+        </ThemeProvider>
       </body>
     </html>
-  );
+  )
 }
