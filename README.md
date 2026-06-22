@@ -2,6 +2,14 @@
 
 A precise portfolio for a multidisciplinary designer, frontend developer, and creative engineer. Visitors — recruiters, design clients, and engineering clients — assess the quality of work, range of disciplines, and fit for a role or project. Success means visitors evaluate with confidence, remember the portfolio, and find a clear path to make contact.
 
+## Preview
+
+![Portfolio home page](docs/screenshots/home.png)
+
+| Code project | Fund Dashboard project |
+|---|---|
+| ![Code project page](docs/screenshots/project-code.png) | ![Fund Dashboard project page](docs/screenshots/project-fund-dashboard.png) |
+
 ## Stack
 
 - **Framework:** Next.js 16 (App Router)
