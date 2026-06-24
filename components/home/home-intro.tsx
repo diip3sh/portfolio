@@ -57,7 +57,7 @@ export const HomeIntroSection = ({ intro }: HomeIntroSectionProps) => {
           className="inline-flex items-center gap-1.5 align-middle decoration-muted-foreground decoration-dotted underline-offset-4"
         >
           <CompanySVG size={16} />
-          <span className="bg-linear-90 from-[#5C0A9A] from-0% via-[#3A076E] via-55% to-[#171033] to-100% bg-clip-text font-medium text-transparent">
+          <span className="bg-linear-90 from-[#5C0A9A] from-0% via-[#3A076E] via-55% to-[#171033] to-100% bg-clip-text font-medium text-transparent dark:from-[#E4C1FF] dark:via-[#C77DFF] dark:via-55% dark:to-[#9B5DE5]">
             Portdex
           </span>
         </Link>
