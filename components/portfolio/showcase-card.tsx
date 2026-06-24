@@ -86,6 +86,7 @@ const placeholderHeightByComponentKey: Record<string, string> = {
   "scan-document": "min-h-[320px]",
   "set-timer": "min-h-[500px]",
   "theme-toggle": "min-h-[140px]",
+  timezone: "min-h-[490px]",
 }
 
 const useIsNearViewport = <T extends HTMLElement>(
@@ -251,7 +252,7 @@ const LazyShowcaseComponent = ({
     <div
       ref={containerRef}
       className={cn(
-        "relative flex w-full justify-center overflow-visible bg-transparent",
+        "relative flex w-full items-center justify-center overflow-visible bg-transparent",
         placeholderHeightClassName
       )}
     >
