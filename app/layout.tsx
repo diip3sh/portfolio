@@ -16,6 +16,7 @@ import {
   SITE_URL,
   X_HANDLE,
 } from "@/lib/seo"
+import { Analytics } from '@vercel/analytics/next';
 
 export const metadata: Metadata = {
   metadataBase: SITE_URL,
@@ -123,6 +124,7 @@ export default function RootLayout({
         <ThemeProvider>
           <TooltipProvider>
             {children}
+            <Analytics />
             <Toaster
               toastOptions={{
                 style: {

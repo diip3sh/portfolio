@@ -552,36 +552,20 @@ Do not simplify the interaction into a static card. The final result must includ
     xLink: "https://x.com/diip3sh/status/2016955164411023651?s=20",
   },
   //canvas masking
-  {
-    type: "showcase",
-    title: "Canvas Masking",
-    stack: ["canvas", "motion"],
-    media: {
-      type: "video",
-      src: "https://pub-17f1ae3c481641228230d1b2dcdc07ff.r2.dev/craft/Draggable%20Mask%20(online-video-cutter.com).mp4",
-      width: 1680,
-      height: 1080,
-      alt: "Canvas Masking",
-    },
-    col: 2,
-    order: 4,
-    xLink: "https://x.com/diip3sh/status/2013327530997211144?s=20",
-  },
-  //light bulb button
   // {
   //   type: "showcase",
-  //   title: "Light Bulb Button",
-  //   stack: ["motion", "typescript"],
+  //   title: "Canvas Masking",
+  //   stack: ["canvas", "motion"],
   //   media: {
   //     type: "video",
-  //     src: "https://pub-17f1ae3c481641228230d1b2dcdc07ff.r2.dev/craft/blub-button-1765180414006.mp4",
-  //     width: 1632,
+  //     src: "https://pub-17f1ae3c481641228230d1b2dcdc07ff.r2.dev/craft/Draggable%20Mask%20(online-video-cutter.com).mp4",
+  //     width: 1680,
   //     height: 1080,
-  //     alt: "Light Bulb Button",
+  //     alt: "Canvas Masking",
   //   },
-  //   col: 1,
-  //   order: 14,
-  //   xLink: "https://x.com/diip3sh/status/1997939885471346790?s=20",
+  //   col: 2,
+  //   order: 4,
+  //   xLink: "https://x.com/diip3sh/status/2013327530997211144?s=20",
   // },
   //threejs face masking shader
   {
@@ -599,22 +583,6 @@ Do not simplify the interaction into a static card. The final result must includ
     order: 10,
     xLink: "https://x.com/diip3sh/status/1981019861993365736?s=20",
   },
-  //shadow button
-  // {
-  //   type: "showcase",
-  //   title: "Shadow Button",
-  //   stack: ["css", "motion"],
-  //   media: {
-  //     type: "video",
-  //     src: "https://pub-17f1ae3c481641228230d1b2dcdc07ff.r2.dev/craft/twU0vE_GfLprjyGl.mp4",
-  //     width: 746,
-  //     height: 660,
-  //     alt: "Shadow Button",
-  //   },
-  //   col: 2,
-  //   order: 11,
-  //   xLink: "https://x.com/diip3sh/status/1951916692029755612?s=20",
-  // },
   //image slider
   {
     type: "showcase",
@@ -657,8 +625,8 @@ Do not simplify the interaction into a static card. The final result must includ
       height: 1080,
       alt: "text to bento cards",
     },
-    col: 1,
-    order: 7,
+    col: 2,
+    order: 4,
     xLink: "https://x.com/diip3sh/status/2059627514654544352?s=20",
     prompt: `Create a reusable **Scroll Morph Bento Grid** component for an existing React + TypeScript codebase.
 
@@ -922,22 +890,6 @@ Do not simplify the interaction into a static card. The final result must includ
       Do not turn this into a static grid. The key interaction is the scroll-linked morph from text fragments into final image bento cards.
     `,
   },
-  //keys hero design
-  // {
-  //   type: "showcase",
-  //   title: "Keys Hero Design",
-  //   stack: [""],
-  //   media: {
-  //     type: "video",
-  //     src: "https://pub-17f1ae3c481641228230d1b2dcdc07ff.r2.dev/craft/keyboard-hero-design.mp4",
-  //     width: 1662,
-  //     height: 1080,
-  //     alt: "keyboard",
-  //   },
-  //   col: 1,
-  //   order: 12,
-  //   xLink: "https://x.com/diip3sh/status/2062238370236125331?s=20",
-  // },
   //liquid glass blob
   {
     type: "showcase",
@@ -2040,5 +1992,600 @@ Return:
 
 Important:
 Do not simplify this into a normal timer form. The key interaction is the morphing surface: compact timer button → wheel picker → running timer with rounded-rectangle progress border.`,
+  },
+  //timezone showcase
+  {
+    type: "showcase",
+    title: "Timezone Showcase",
+    stack: [""],
+    media: {
+      type: "component",
+      componentKey: "timezone",
+      alt: "timezone showcase",
+    },
+    col: 1,
+    order: 7,
+    xLink: "",
+    prompt: `Create a reusable **Timezone Showcase / World Clock Comparison Card** component for an existing React + TypeScript codebase.
+
+Before writing any code, ask me these clarification questions and wait for my answer:
+
+1. **Which package manager do you use?**
+
+   * Bun
+   * npm
+   * Yarn
+   * pnpm
+
+2. **What should be the local/base timezone?**
+
+   * Example: \`Asia/Kolkata\`
+
+3. **Which cities/timezones should be shown?**
+
+   * Example:
+
+     * Jamshedpur — \`Asia/Kolkata\`
+     * San Francisco — \`America/Los_Angeles\`
+     * London — \`Europe/London\`
+     * New York — \`America/New_York\`
+
+4. **Should the card support dark mode?**
+
+   * Yes, include light and dark mode styles.
+   * No, keep it light-only.
+
+Do not start implementation until I answer these questions.
+
+Package setup:
+This component requires Luxon for timezone-safe date/time handling.
+
+After I tell you my package manager, install dependencies using the matching command:
+
+\`\`\`bash
+bun add luxon motion
+\`\`\`
+
+\`\`\`bash
+npm install luxon motion
+\`\`\`
+
+\`\`\`bash
+yarn add luxon motion
+\`\`\`
+
+\`\`\`bash
+pnpm add luxon motion
+\`\`\`
+
+If TypeScript reports missing Luxon types, also install:
+
+\`\`\`bash
+bun add -d @types/luxon
+\`\`\`
+
+\`\`\`bash
+npm install -D @types/luxon
+\`\`\`
+
+\`\`\`bash
+yarn add -D @types/luxon
+\`\`\`
+
+\`\`\`bash
+pnpm add -D @types/luxon
+\`\`\`
+
+Goal:
+Build a polished world-clock comparison card that shows the user’s local time and multiple remote city times. The card should include an animated horizontal clock ruler, day/night status indicators, timezone offset labels, per-digit time animations, and an expandable list of additional cities.
+
+The component should feel like a premium iOS-style world clock widget: precise, editorial, smooth, compact, and portfolio-grade.
+
+Component concept:
+
+* A rounded card displays a world clock comparison.
+* The top area shows:
+
+  * active timezone label
+  * active offset difference
+  * animated horizontal 12-hour ruler
+  * centered orange marker
+* The list area shows city rows:
+
+  * offset label
+  * city name
+  * day/night status
+  * current local time for that city
+* Hovering or focusing a city row updates the active timezone/ruler.
+* The ruler slides so the hovered city’s time aligns under the center marker.
+* The first city is the local/base city.
+* The card starts collapsed with two rows.
+* A “See more” button expands the remaining rows.
+* A “See less” button collapses the card again.
+
+Stack:
+
+* React
+* TypeScript
+* Tailwind CSS
+* Motion for React from \`motion/react\`
+* Luxon
+* \`cn()\` utility if needed
+
+Required imports:
+
+\`\`\`ts
+import { useEffect, useMemo, useState } from "react"
+import { DateTime } from "luxon"
+import {
+  AnimatePresence,
+  animate,
+  motion,
+  useMotionValue,
+  useReducedMotion,
+} from "motion/react"
+\`\`\`
+
+Do not use:
+
+* Date-fns
+* Moment.js
+* native \`Date\` timezone formatting for the core logic
+* GSAP
+* canvas
+* WebGL
+* external clock widgets
+* JavaScript animation loops except the 1-second time update interval
+
+Main component name:
+
+\`\`\`tsx
+export const TimezoneShowcase = () => {
+  return (...)
+}
+\`\`\`
+
+Expected usage:
+
+\`\`\`tsx
+<TimezoneShowcase />
+\`\`\`
+
+Types:
+Create these types:
+
+\`\`\`ts
+type WorldClockRow = {
+  city: string
+  offset: string
+  status: "day" | "night"
+  time: string
+  height: string
+  timezoneLabel: string
+  deltaLabel: string
+  rulerTilt: number
+  isLocal: boolean
+}
+\`\`\`
+
+\`\`\`ts
+type WorldClockLocation = {
+  city: string
+  zone: string
+  height: string
+  rulerTilt: number
+  isLocal?: boolean
+}
+\`\`\`
+
+Location data:
+Create a configurable \`worldClockLocations\` array.
+
+Example:
+
+\`\`\`ts
+const localZone = "Asia/Kolkata"
+
+const worldClockLocations: WorldClockLocation[] = [
+  {
+    city: "Jamshedpur",
+    zone: localZone,
+    height: "h-[126px]",
+    rulerTilt: 0,
+    isLocal: true,
+  },
+  {
+    city: "San Francisco",
+    zone: "America/Los_Angeles",
+    height: "h-[127px]",
+    rulerTilt: -22,
+  },
+  {
+    city: "London",
+    zone: "Europe/London",
+    height: "h-[126px]",
+    rulerTilt: 18,
+  },
+  {
+    city: "New York",
+    zone: "America/New_York",
+    height: "h-[121px]",
+    rulerTilt: 24,
+  },
+]
+\`\`\`
+
+Timezone labels:
+Create a label override map for zones that need custom labels:
+
+\`\`\`ts
+const timezoneLabelByZone: Record<string, string> = {
+  "Asia/Kolkata": "IST",
+}
+\`\`\`
+
+Create \`getTimezoneLabel(dateTime, zone)\`:
+
+* Use configured label first.
+* Otherwise use \`dateTime.offsetNameShort\`.
+* If short name starts with \`GMT\`, fall back to \`dateTime.toFormat("ZZZZ")\`.
+
+Offset difference:
+Create \`formatOffsetDifference(targetOffsetMinutes, baseOffsetMinutes)\`:
+
+* Compare target offset to base offset.
+* Return \`+0H\` if same offset.
+* Return values like:
+
+  * \`-12:30H\`
+  * \`-5:30H\`
+  * \`+4H\`
+  * \`+1H\`
+
+Day/night status:
+Create \`getStatus(dateTime)\`:
+
+* Return \`day\` when hour is between 8 and 18.
+* Return \`night\` otherwise.
+
+Rows:
+Create \`createWorldClockRows(now)\`:
+
+* Convert \`now\` to each location’s zone.
+* Format time as \`HH:mm\`.
+* Calculate timezone label.
+* Calculate offset delta against the base/local timezone.
+* Mark local row as \`YOUR TIME\`.
+* Return \`WorldClockRow[]\`.
+
+Clock ruler:
+Build a horizontal 12-hour ruler.
+
+Use constants similar to:
+
+\`\`\`ts
+const RULER_SUB_SPACING = 7
+const RULER_HOUR_WIDTH = RULER_SUB_SPACING * 12
+const RULER_CYCLE_WIDTH = RULER_HOUR_WIDTH * 12
+const RULER_HOUR_RANGE = 96
+const RULER_VIEW_WIDTH = 690
+const RULER_MARKER_X = RULER_VIEW_WIDTH / 2
+const RULER_ANCHOR_CYCLE = RULER_CYCLE_WIDTH * 4
+\`\`\`
+
+Ruler behavior:
+
+* Each hour is a major tick.
+* Each hour has 11 minor ticks between it, representing 5-minute steps.
+* The ruler should repeat across a large range so no strip ends are visible.
+* The center marker should stay fixed.
+* The ruler strip should move horizontally so the active city’s time lands under the center marker.
+* When switching active city, animate the ruler toward the nearest wrapped position so it takes the shortest path around the 12-hour loop.
+
+Create:
+
+* \`toClockLabel(hourIndex)\`
+* \`rulerHourTicks\`
+* \`rulerMinorTicks\`
+* \`timeToClockHours(time)\`
+
+\`timeToClockHours\` should fold 24-hour time onto a 12-hour scale:
+
+\`\`\`ts
+const timeToClockHours = (time: string) => {
+  const [hour, minute] = time.split(":").map(Number)
+  return (hour % 12) + minute / 60
+}
+\`\`\`
+
+Ruler animation:
+Use \`useMotionValue\` for \`rulerX\`.
+
+Use \`animate(rulerX, wrappedTarget, rulerSpring)\` where:
+
+\`\`\`ts
+const rulerSpring = {
+  type: "spring",
+  stiffness: 70,
+  damping: 12,
+  mass: 1,
+} as const
+\`\`\`
+
+If reduced motion is enabled, set the ruler position instantly.
+
+Card scale:
+The original design is tuned at around \`690px\` wide. Add a scale constant:
+
+\`\`\`ts
+const CARD_SCALE = 0.6
+\`\`\`
+
+Use CSS \`zoom\` instead of \`transform: scale\` for showcase cards because \`zoom\` reflows the layout box and avoids breaking Motion layout animations caused by ancestor transforms.
+
+Card visual:
+
+* Width around \`690px\`.
+* Rounded corners around \`30px\`.
+* Light background:
+
+  * \`#F6F6F7\`
+* Active surface:
+
+  * \`#ECECEE\`
+* Dark mode support:
+
+  * card: \`#1B1F22\`
+  * active surface: \`#1B1E22\`
+  * rows: \`#24262B\`
+* Subtle 1px shadow/border.
+* Use \`overflow-clip\`.
+* Use antialiased text.
+* Use \`font-synthesis: none\`.
+
+Card height:
+Animate card height based on expanded state:
+
+* collapsed: around \`486px\`
+* expanded: around \`734px\`
+
+Use a smooth collapse transition:
+
+\`\`\`ts
+const collapseTransition = {
+  duration: 0.32,
+  ease: [0.22, 1, 0.36, 1],
+} as const
+\`\`\`
+
+Header:
+At the top of the card, render:
+
+* active timezone label on the left
+* active delta label on the right
+
+Both should animate on change using \`AnimatePresence\`:
+
+* new label enters from below
+* old label exits upward
+* use slight blur during enter/exit
+
+Ruler:
+Render an SVG inside a masked horizontal container:
+
+* width \`690px\`
+* height \`70px\`
+* mask edges with a left/right fade
+* minor ticks are shorter/lighter
+* major ticks are taller/darker
+* hour labels sit above ticks
+* centered orange marker is a vertical rounded line at the card center
+
+Rows:
+Create \`WorldClockListRow\`.
+
+Props:
+
+\`\`\`ts
+{
+  row: WorldClockRow
+  index: number
+  shouldReduceMotion: boolean
+  handleHoveredTimezoneChange: (row: WorldClockRow | null) => void
+}
+\`\`\`
+
+Each row should:
+
+* be focusable with \`tabIndex={0}\`
+* update active timezone on mouse enter/focus
+* reset active timezone on mouse leave/blur
+* have a full accessible label:
+
+\`\`\`tsx
+aria-label={\`\${row.city}, \${row.offset}, \${row.status}, \${row.time}\`}
+\`\`\`
+
+Row layout:
+
+* fixed row height from row data
+* bottom border
+* local row uses active surface
+* remote rows use normal row surface and hover surface
+* left side:
+
+  * offset label at top
+  * city name below
+* right side:
+
+  * day/night status at top
+  * time below
+
+Typography:
+
+* Offset/status labels:
+
+  * mono font
+  * uppercase feel
+  * around \`20px\`
+  * tracking around \`0.04em\`
+* City names:
+
+  * serif display font
+  * around \`40px\`
+* Time:
+
+  * sans font
+  * around \`42px\`
+  * tabular numbers
+
+Status indicator:
+Create \`StatusIndicator\`.
+
+If status is \`night\`:
+
+* render \`NIGHT\`
+* render a moon icon
+* use muted gray text
+
+If status is \`day\`:
+
+* render \`DAY\`
+* render a green dot
+* add a soft green ring/shadow
+
+Animate status icon changes with \`AnimatePresence\`.
+
+Animated time:
+Create \`AnimatedTime\`.
+
+Behavior:
+
+* If reduced motion is enabled, render plain text.
+* Otherwise split the time string into characters.
+* Animate each character with staggered children.
+* Use tabular numbers.
+* Only remount/replay when the full value changes by using \`key={value}\`.
+* Use a small y/opacity/blur pop-in.
+
+Variants:
+
+\`\`\`ts
+const digitVariants = {
+  hidden: { y: 8, opacity: 0, filter: "blur(2px)" },
+  visible: { y: 0, opacity: 1, filter: "blur(0px)" },
+}
+\`\`\`
+
+Live time:
+Use a 1-second interval:
+
+* \`setNow(DateTime.now())\`
+* cleanup interval on unmount
+
+Expanded rows:
+
+* Always show first two rows.
+* Put remaining rows inside \`AnimatePresence\`.
+* When expanded:
+
+  * animate height from 0 to auto
+  * opacity from 0 to 1
+  * blur from 4px to 0
+* When collapsed:
+
+  * animate height back to 0
+  * opacity to 0
+  * blur to 4px
+
+See more / See less button:
+
+* Absolute footer area.
+* Move footer top position depending on expanded state.
+* Button text:
+
+  * collapsed: \`See more\`
+  * expanded: \`See less\`
+* Include chevron icon.
+* Use \`aria-expanded\`.
+* Use \`aria-label\`:
+
+  * \`See more world clock rows\`
+  * \`See fewer world clock rows\`
+* Rotate chevron depending on expanded state.
+* Add hover/tap animation unless reduced motion is enabled.
+
+Reduced motion:
+Respect \`prefers-reduced-motion\`.
+
+If reduced motion is enabled:
+
+* disable entry blur movement
+* set ruler position instantly
+* render time values without per-digit animation
+* avoid hover/tap scale effects
+* keep expand/collapse readable with minimal opacity/height changes
+
+Accessibility:
+
+* Main section should use:
+
+\`\`\`tsx
+aria-label="World clock time comparison"
+\`\`\`
+
+* City rows should be keyboard focusable.
+* Hover and focus should trigger the same active timezone behavior.
+* Do not rely only on hover.
+* Decorative SVG icons should use \`aria-hidden="true"\`.
+* The expand button should use \`aria-expanded\`.
+* The card should still make sense with animation disabled.
+
+Dark mode:
+If I choose dark mode support, include \`dark:\` Tailwind classes for:
+
+* card background
+* active surface
+* row background
+* row hover background
+* borders
+* primary text
+* muted text
+* ruler ticks
+* ruler labels
+* shadows
+
+Return:
+
+1. Full \`TimezoneShowcase.tsx\` component.
+2. Luxon + Motion installation command for my package manager.
+3. \`WorldClockRow\` and \`WorldClockLocation\` types.
+4. Timezone/location configuration.
+5. Time formatting helpers.
+6. Offset difference helper.
+7. Day/night status helper.
+8. 12-hour ruler constants.
+9. Ruler tick generation.
+10. \`StatusIndicator\`.
+11. \`AnimatedTime\`.
+12. \`WorldClockListRow\`.
+13. Expand/collapse logic.
+14. Ruler hover/focus behavior.
+15. Reduced-motion support.
+16. Dark-mode support if selected.
+17. Short customization notes for:
+
+    * base timezone
+    * city list
+    * collapsed row count
+    * card scale
+    * ruler density
+    * day/night threshold
+    * typography
+    * dark mode
+    * animation intensity
+
+Important:
+Do not simplify this into a static list of clocks. The key interaction is the active timezone comparison system: live timezone calculations, hover/focus-driven active row, animated 12-hour ruler alignment, expandable rows, and animated time/status transitions.`,
   },
 ]

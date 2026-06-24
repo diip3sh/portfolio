@@ -105,6 +105,14 @@ const SubscriptionRegistryShowcase = dynamic<ShowcaseComponentProps>(
   { loading: ComponentLoadingPlaceholder }
 )
 
+const TimezoneRegistryShowcase = dynamic<ShowcaseComponentProps>(
+  () =>
+    import("@/components/showcase/timezone-showcase").then(
+      (module) => module.TimezoneShowcase
+    ),
+  { loading: ComponentLoadingPlaceholder }
+)
+
 const showcaseComponentPreloaders: Record<string, () => Promise<unknown>> = {
   "edit-time": () => import("@/components/showcase/edit-time-showcase"),
   "card-hover": () => import("@/components/showcase/card-hover-showcase"),
@@ -116,6 +124,7 @@ const showcaseComponentPreloaders: Record<string, () => Promise<unknown>> = {
   "set-timer": () => import("@/components/showcase/set-timer-showcase"),
   "liquid-glass-blob": () =>
     import("@/components/showcase/liquid-glass-blob-showcase"),
+  "timezone": () => import("@/components/showcase/timezone-showcase"),
   subscription: () => import("@/components/showcase/subscription-showcase"),
 }
 
@@ -143,4 +152,5 @@ export const showcaseComponentRegistry: Record<
   "set-timer": SetTimerRegistryShowcase,
   "liquid-glass-blob": LiquidGlassBlobRegistryShowcase,
   subscription: SubscriptionRegistryShowcase,
+  "timezone": TimezoneRegistryShowcase,
 }
