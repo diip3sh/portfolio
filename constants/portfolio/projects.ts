@@ -183,6 +183,172 @@ export const portfolioProjects: PortfolioProject[] = [
       "Refined the environment picker with compact worktree grids, animated chevrons, and collapsible rate-limit sections.",
     ],
   },
+  //orbit
+  {
+    type: "project",
+    slug: "orbit",
+    title: "Orbit",
+    link: "https://github.com/diip3sh/orbit",
+    col: 1,
+    order: 0,
+    media: [
+      {
+        type: "placeholder",
+        alt: "Orbit menu bar screen recorder and video editor",
+      },
+    ],
+    stack: [
+      "Swift",
+      "SwiftUI",
+      "AppKit",
+      "ScreenCaptureKit",
+      "AVFoundation",
+      "Core Image",
+      "MCP Swift SDK",
+    ],
+    description:
+      "Orbit is a free, open-source macOS screen recorder, screenshot tool, and video editor\u2014a Screen Studio and CleanShot X alternative that lives in the menu bar. Forked from BetterCapture, it records a screen, window, or area through ScreenCaptureKit alongside a telemetry sidecar of cursor positions, clicks, scrolls, and key codes, then turns the take into a polished video with automatic zooms on clicks and typing, a smoothed redrawn cursor, keystroke overlays, and styled 16:9, 9:16, 1:1, or 4:3 canvases. Exports go out as HEVC, H.264, or ProRes 4444 with transparency. A local MCP server lets Claude Code, Codex, Cursor, Gemini CLI, and OpenCode inspect a web page, script hovers, clicks, and typing on it, and render a frame-perfect recording straight into the editor.",
+    challenges: [
+      "Keeping the editor preview and the exported file pixel-identical while `AVFoundation` requests frames out of order when scrubbing and in parallel during export.",
+      "Turning raw `telemetry`\u2014cursor samples, clicks, keystrokes\u2014into zooms and cursor motion that read as directed rather than jittery.",
+      "Letting cuts and trims move freely without invalidating every zoom, highlight, and overlay placed on the timeline.",
+      "Giving coding agents a way to record a page from a sentence, across agents that each store `MCP` config in a different file and format.",
+    ],
+    solutions: [
+      "Routed preview and export through one custom `AVVideoCompositing` compositor and a pure `FrameRenderer`, so what you see is what you export by construction.",
+      "Integrated springs, smoothing, and auto-zoom once into precomputed sampled tracks, so drawing a frame is lookups plus a small `Core Image` graph with no simulation state.",
+      "Stored every effect in source time and isolated cuts in a single `TimeMap` from output time to source time.",
+      "Shipped a local `MCP` server with `inspect_page`, `record_page`, and `export_recording` tools, plus one-click Connect per agent in Settings that only adds Orbit's own entry.",
+    ],
+  },
+  //playthrou
+  {
+    type: "project",
+    slug: "playthrou",
+    title: "Playthru",
+    link: "https://playthrou.diip3sh.xyz",
+    col: 2,
+    order: 2,
+    media: [
+      {
+        type: "image",
+        src: "https://raw.githubusercontent.com/diip3sh/playthrou/main/.github/media/demo.gif",
+        alt: "Playthru driving a live issue tracker: the cursor opens the composer and types, a real mouse takes over, then the demo resumes",
+        width: 600,
+        height: 600,
+      },
+    ],
+    stack: ["TypeScript", "React", "Astro", "Changesets", "npm"],
+    description:
+      "Playthru replaces the 6 MB hero MP4 with your actual UI. A scripted cursor glides across the real interface, clicks, types, and pushes a camera in on what matters, then loops\u2014sharp at any size, in light or dark, and never out of date with the product. The library has zero dependencies, ships at ~5 KB gzipped with no stylesheet, and exposes a chainable API (`click`, `type`, `zoom`, `reset`) plus a React component and hook. An agent skill lets Claude Code or Cursor set up a demo from a single prompt. Every timing is a fixed decision rather than an option: there is no speed, easing, or duration setting.",
+    challenges: [
+      "Firing clicks and keystrokes that real app handlers respond to, including React and Vue controlled inputs, without stealing focus or navigating away.",
+      "Running scripted events through the whole page without tripping a menu's click-outside handler and closing popovers the visitor opened.",
+      "Choosing glide, typing, and zoom timings that read as human at video frame rates instead of exposing a wall of knobs.",
+      "Pausing cleanly on hover, scroll-out, or a background tab, and resuming exactly mid-motion.",
+    ],
+    solutions: [
+      "Dispatched the full `pointerdown \u2192 mousedown \u2192 pointerup \u2192 mouseup \u2192 click` sequence, drew a custom caret, and prevented default navigation while leaving handlers intact.",
+      "Paused the demo while any `aria-expanded` popup or native `:popover-open` element outside the stage is open, which covers Radix, Base UI, Headless UI, React Aria, and MUI.",
+      "Fixed the numbers as product decisions: a 420 ms + 0.34 ms/px glide on a 10% arc, seeded 48 ms typing jitter, and zoom clamped to 1.3\u20132.2\u00d7.",
+      "Drove everything from one pausable frame clock, with `prefers-reduced-motion` swapping glides and camera moves for cuts.",
+    ],
+  },
+  //feel
+  {
+    type: "project",
+    slug: "feel",
+    title: "Feel",
+    link: "https://diip3sh.github.io/feel",
+    col: 1,
+    order: 3,
+    media: [
+      {
+        type: "video",
+        src: "https://diip3sh.github.io/feel/assets/demo.mp4",
+        poster: "https://diip3sh.github.io/feel/assets/poster.png",
+        alt: "Feel test rig flicking a heavy, detented knob back to zero with angle, velocity, and force field plotted beside it",
+        width: 1920,
+        height: 1080,
+      },
+      {
+        type: "image",
+        src: "https://diip3sh.github.io/feel/assets/poster.png",
+        alt: "Feel knob rig with measured and predicted motion curves",
+        width: 1920,
+        height: 1080,
+      },
+    ],
+    stack: [
+      "JavaScript",
+      "TypeScript",
+      "React",
+      "CSS linear()",
+      "Claude Code skills",
+    ],
+    description:
+      "Feel is a Claude Code skill, runtime, and test rig for interactions built on physics. Describe a feel\u2014\u201ca toggle that feels heavy\u201d, \u201ca drawer with a magnetic snap\u201d\u2014and get a production component driven by mass, stiffness, damping, and force fields on a line, in a plane, or around a dial. The rig plots position, velocity, and the force field, overlays the model's prediction on measured motion, can hand each release to the browser as CSS keyframes baked from the same model, and exports the spring to Framer Motion, react-spring, SwiftUI, Compose, or CSS `linear()`. The rule is strict: no hand-picked durations or easing curves anywhere.",
+    challenges: [
+      "Translating vague words like \u201cheavy\u201d or \u201csnappy\u201d into physical parameters that behave consistently across toggles, drawers, cards, and knobs.",
+      "Making drags feel weighted and releases feel thrown, so heavy things lag the finger and land where momentum would carry them.",
+      "Handing motion to CSS when a platform demands it without letting a hand-tuned duration back in.",
+      "Proving the solver, snapping, and settle times are correct rather than just looking right.",
+    ],
+    solutions: [
+      "Built `Feel.words` to map descriptions onto mass, stiffness, and damping, with magnets, detents, and 2D points as force fields on the same body.",
+      "Pulled the body through a hand spring during drags and kept its real release velocity, deciding the target from where it would coast.",
+      "Baked CSS keyframes and `linear()` easings from the model itself and labelled any computed duration as such.",
+      "Wrote an audit that fails on `transition: 300ms` or `cubic-bezier`, checks the solver against exact solutions, and verifies baked keyframes match the JS loop.",
+    ],
+  },
+  //exploded
+  {
+    type: "project",
+    slug: "exploded",
+    title: "Exploded",
+    link: "https://diip3sh.github.io/exploded",
+    col: 2,
+    order: 3,
+    media: [
+      {
+        type: "video",
+        src: "https://diip3sh.github.io/exploded/assets/demo.mp4",
+        poster: "https://diip3sh.github.io/exploded/assets/poster.jpg",
+        alt: "Exploded pulling a primary button apart into six isometric paint layers",
+        width: 2160,
+        height: 1350,
+      },
+      {
+        type: "image",
+        src: "https://diip3sh.github.io/exploded/assets/content-layer.jpg",
+        alt: "Exploded content layer with padding, gap, and type redlines on a Deploy button",
+        width: 2160,
+        height: 1350,
+      },
+    ],
+    stack: [
+      "JavaScript",
+      "TypeScript",
+      "React",
+      "Next.js",
+      "CSS",
+      "Claude Code skills",
+    ],
+    description:
+      "Exploded is a Claude Code skill and runtime that takes a real UI component apart. Name a component and it renders it, then pulls it apart in isometric into its paint layers\u2014elevation, surface, stroke, inner surfaces, content, and focus ring\u2014with every state switchable and every measurement and design token readable right off the layers. Nothing is redrawn and no number is typed: each layer is the live component cloned with its computed styles, each value comes from `getComputedStyle` and layout boxes, and each token name comes from the CSS rule the author wrote, so the spec sheet can't drift from what ships.",
+    challenges: [
+      "Splitting one live component into layers so each paint lands on exactly one layer without redrawing anything.",
+      "Showing `:hover`, `:focus`, and `:active` states side by side without a real pointer or keyboard.",
+      "Printing padding, radius, gap, and type redlines that stay legible at any zoom and never cover the glyphs they measure.",
+      "Surfacing the token an author actually used (`--radius-md`, `--spacing \u00d7 2.5`) instead of a resolved pixel value.",
+    ],
+    solutions: [
+      "Cloned the live node per layer with the browser's computed styles and made paint belonging to other layers transparent, backing light paint with its real surface colour.",
+      "Forced interactive states by rewriting the matching CSS rules, then combined every state into one stack so the focus ring waits, dashed, at rest.",
+      "Kept redline labels at a fixed on-screen size and positioned them around text ranges and layout boxes.",
+      "Traced each value back to its source rule and added an audit that checks every layer lays out within 0.5 px of the live component in every state.",
+    ],
+  },
   //fund dashboard
   // {
   //   type: "project",
