@@ -9,6 +9,7 @@ import { TooltipProvider } from "@/components/ui/tooltip"
 import { Toaster } from "@/components/ui/sonner"
 import {
   DEFAULT_SOCIAL_IMAGE,
+  DEFAULT_SOCIAL_VIDEO,
   SITE_DESCRIPTION,
   SITE_LOCALE,
   SITE_NAME,
@@ -45,6 +46,7 @@ export const metadata: Metadata = {
     title: SITE_TITLE,
     description: SITE_DESCRIPTION,
     images: [DEFAULT_SOCIAL_IMAGE],
+    videos: [DEFAULT_SOCIAL_VIDEO],
   },
   twitter: {
     card: "summary_large_image",

@@ -1,0 +1,430 @@
+<!doctype html>
+<!--
+  Open Graph video stage for diip3sh.xyz (1200x630, 4s seamless loop).
+
+  Dark, to match the site. Frame 0: the gallery is frozen in grayscale and the
+  lime "Alive." (same hue as the --primary token) is the only colour. "Alive."
+  kicks, a lime line spreads from it, and every tile it passes wakes up (colour
+  + its real clip plays). Then each tile fades back to grey while its clip
+  rewinds to the frozen frame, far tiles first, so the loop lands exactly on
+  frame 0 with no seam and no double exposure.
+
+  Modes
+    /og.html            live preview, loops forever in real time
+    /og.html?still      frame 0 only (poster)
+    window.__og.render(ms)  deterministic frame render, used by scripts/record-og-video.mjs
+    window.__og.coverMs     the all-colour frame used for og:image
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="robots" content="noindex" />
+    <title>OG stage</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif&display=block"
+      rel="stylesheet"
+    />
+    <style>
+      @font-face {
+        font-family: "Commit Mono";
+        src: url("fonts/CommitMono-400-Regular.otf") format("opentype");
+        font-weight: 400;
+        font-display: block;
+      }
+      @font-face {
+        font-family: "Commit Mono";
+        src: url("fonts/CommitMono-500-Regular.otf") format("opentype");
+        font-weight: 500;
+        font-display: block;
+      }
+
+      :root {
+        --lime: #9ae600; /* light --primary, oklch(0.841 0.238 128.85) */
+        --ink: #fff; /* --portfolio-ink (dark) */
+        --muted: #ababab; /* --portfolio-muted (dark) */
+        --page: #101010; /* --portfolio-surface (dark), the site background */
+        --media: #2f2f2f; /* --portfolio-media / border (dark) */
+        --line: rgba(255, 255, 255, 0.08);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        background: var(--page);
+      }
+
+      #stage {
+        position: relative;
+        width: 1200px;
+        height: 630px;
+        overflow: hidden;
+        background: var(--page);
+        font-family: "Commit Mono", ui-monospace, monospace;
+        color: var(--ink);
+      }
+
+      /* ---------- left: headline ---------- */
+
+      #copy {
+        position: absolute;
+        left: 56px;
+        top: 0;
+        bottom: 0;
+        width: 400px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        z-index: 4;
+      }
+
+      #copy h1 {
+        margin: 0;
+        font-weight: 400;
+        font-size: 58px;
+        line-height: 1.02;
+        letter-spacing: -0.05em;
+      }
+
+      #alive {
+        display: inline-block;
+        margin-top: 6px;
+        font-family: "Instrument Serif", serif;
+        font-size: 150px;
+        line-height: 0.9;
+        letter-spacing: -0.03em;
+        color: var(--lime);
+        transform-origin: 30% 80%;
+        will-change: transform;
+      }
+
+      #byline {
+        position: absolute;
+        left: 56px;
+        bottom: 44px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 17px;
+        letter-spacing: -0.03em;
+        color: var(--muted);
+        z-index: 3;
+      }
+
+      #byline b {
+        font-weight: 500;
+        color: var(--ink);
+      }
+
+      #led {
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        background: #4a4a4a;
+      }
+
+      /* soft fade so the gallery tucks under the headline */
+      #veil {
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 476px;
+        background: linear-gradient(
+          90deg,
+          var(--page) 0%,
+          var(--page) 90%,
+          rgba(16, 16, 16, 0) 100%
+        );
+        z-index: 2;
+      }
+
+      /* ---------- right: gallery ---------- */
+
+      #gallery {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+      }
+
+      .tile {
+        position: absolute;
+        border-radius: 12px;
+        overflow: hidden;
+        background: var(--media);
+        outline: 1px solid var(--line);
+        outline-offset: -1px;
+        will-change: transform, filter;
+      }
+
+      .tile video {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+
+      .tile::after {
+        /* lime rim that flashes as the wave passes */
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        border: 2px solid var(--lime);
+        opacity: var(--rim, 0);
+      }
+
+      #ring {
+        position: absolute;
+        border-radius: 50%;
+        border: 2px solid var(--lime);
+        opacity: 0;
+        pointer-events: none;
+        z-index: 2;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage">
+      <div id="gallery"></div>
+      <div id="veil"></div>
+      <div id="ring"></div>
+      <div id="copy">
+        <h1>Interfaces<br />that feel</h1>
+        <div><span id="alive">Alive.</span></div>
+      </div>
+      <div id="byline">
+        <span id="led"></span><b>@diip3sh</b><span>Design Engineer</span>
+      </div>
+    </div>
+
+    <script>
+      const R2 = "https://pub-17f1ae3c481641228230d1b2dcdc07ff.r2.dev/"
+
+      // Real gallery clips. t0 is the frozen frame shown in the poster.
+      // x/y/w/h are stage pixels, pos is an optional object-position; the grid bleeds off the top, right and bottom
+      // so it reads as a window into the live gallery.
+      const TILES = [
+        // column 1
+        { src: R2 + "craft/Shopify%20Transition.mp4", t0: 2.4, x: 470, y: -58, w: 236, h: 170 },
+        { src: R2 + "craft/iIFMesf2PYlUOc28.mp4", t0: 1.3, x: 470, y: 122, w: 236, h: 118 },
+        { src: "https://diip3sh.github.io/feel/assets/demo.mp4", t0: 7.6, x: 470, y: 250, w: 236, h: 176 },
+        { src: R2 + "projects/canvas-1.mp4", t0: 18.5, x: 470, y: 436, w: 236, h: 220 },
+        // column 2
+        { src: R2 + "craft/vertical-slider-1765799424856.mp4", t0: 0.3, x: 716, y: -40, w: 236, h: 150 },
+        { src: R2 + "craft/lando-norris.mp4", t0: 1.0, x: 716, y: 120, w: 236, h: 300 },
+        { src: R2 + "craft/slider-gradient-1769668815641.mp4", t0: 2.6, x: 716, y: 430, w: 236, h: 230 },
+        // column 3
+        { src: "https://diip3sh.github.io/exploded/assets/demo.mp4", t0: 4.6, x: 962, y: -22, w: 270, h: 300 },
+        { src: R2 + "craft/liquid-glass-blob.mp4", t0: 4.3, x: 962, y: 288, w: 270, h: 360, pos: "52% 50%" },
+      ]
+
+      // ---------- timeline (ms) ----------
+      const DURATION = 4000
+      const KICK_START = 360 // "Alive." squash & stretch
+      const WAVE_START = 560 // ring leaves "Alive."
+      const WAVE_SPEED = 1.25 // px per ms
+      const WAKE_MS = 380 // tile colour-up time
+      const FREEZE_START = 2950 // gallery starts freezing (far tiles first)
+      const FREEZE_SPAN = 480 // time for the freeze to sweep back to "Alive."
+      const FREEZE_MS = 450 // per-tile grey-out + rewind to t0
+      const COVER_MS = 2400 // every tile in colour: the og:image frame
+
+      const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v))
+      const easeOutCubic = (t) => 1 - (1 - t) ** 3
+      const easeInOutCubic = (t) =>
+        t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2
+      // damped spring 0 -> 1 with a little overshoot
+      const spring = (t) =>
+        t <= 0 ? 0 : t >= 1 ? 1 : 1 - Math.exp(-6 * t) * Math.cos(9 * t)
+      const mix = (a, b, t) => a + (b - a) * t
+
+      const stage = document.getElementById("stage")
+      const gallery = document.getElementById("gallery")
+      const alive = document.getElementById("alive")
+      const ring = document.getElementById("ring")
+      const led = document.getElementById("led")
+
+      const tiles = TILES.map((spec) => {
+        const el = document.createElement("div")
+        el.className = "tile"
+        Object.assign(el.style, {
+          left: spec.x + "px",
+          top: spec.y + "px",
+          width: spec.w + "px",
+          height: spec.h + "px",
+        })
+        const video = document.createElement("video")
+        video.muted = true
+        video.playsInline = true
+        video.preload = "auto"
+        video.src = spec.src
+        if (spec.pos) video.style.objectPosition = spec.pos
+        el.append(video)
+        gallery.append(el)
+        return { ...spec, el, video, playing: false }
+      })
+
+      // origin of the wave = optical centre of "Alive."
+      let origin = { x: 230, y: 420 }
+      let maxDist = 1
+
+      function measure() {
+        const s = stage.getBoundingClientRect()
+        const a = alive.getBoundingClientRect()
+        origin = { x: a.left - s.left + a.width * 0.42, y: a.top - s.top + a.height * 0.55 }
+        for (const tile of tiles) {
+          const cx = tile.x + tile.w / 2
+          const cy = clamp(tile.y + tile.h / 2, 0, 630)
+          tile.dist = Math.hypot(cx - origin.x, cy - origin.y)
+        }
+        maxDist = Math.max(...tiles.map((t) => t.dist))
+        for (const tile of tiles) {
+          tile.wakeAt = WAVE_START + tile.dist / WAVE_SPEED
+          // far tiles freeze first, the freeze closes back in on "Alive."
+          tile.freezeAt = FREEZE_START + (1 - tile.dist / maxDist) * FREEZE_SPAN
+        }
+      }
+
+      const once = (el, ev) =>
+        new Promise((resolve) => el.addEventListener(ev, resolve, { once: true }))
+
+      async function seek(video, time) {
+        if (Math.abs(video.currentTime - time) < 0.001 && video.readyState >= 2) return
+        const done = once(video, "seeked")
+        video.currentTime = time
+        await done
+      }
+
+      async function prepare() {
+        await document.fonts.ready
+        await Promise.all(
+          tiles.map(async (tile) => {
+            const { video } = tile
+            if (video.readyState < 2) await once(video, "loadeddata")
+            await seek(video, tile.t0)
+          })
+        )
+        measure()
+        apply(0)
+        document.body.dataset.ready = "true"
+      }
+
+      // Pure visual state for time t (videos handled separately).
+      function apply(t) {
+        // "Alive." kick: squash, stretch, settle
+        const k = clamp((t - KICK_START) / 520)
+        let sx = 1
+        let sy = 1
+        if (k > 0 && k < 1) {
+          const squash = Math.sin(clamp(k / 0.28) * Math.PI) * (k < 0.28 ? 1 : 0)
+          const stretch = k >= 0.28 ? Math.exp(-5 * (k - 0.28)) * Math.sin(((k - 0.28) / 0.72) * Math.PI * 2.2) : 0
+          sx = 1 + squash * 0.07 - stretch * 0.05
+          sy = 1 - squash * 0.09 + stretch * 0.08
+        }
+        alive.style.transform = `scale(${sx.toFixed(4)}, ${sy.toFixed(4)})`
+
+        // ring
+        const r = Math.max(0, (t - WAVE_START) * WAVE_SPEED)
+        const ringLife = clamp(r / (maxDist + 160))
+        const ringOpacity = r > 0 && ringLife < 1 ? (1 - ringLife) ** 1.4 : 0
+        Object.assign(ring.style, {
+          left: origin.x - r + "px",
+          top: origin.y - r + "px",
+          width: r * 2 + "px",
+          height: r * 2 + "px",
+          opacity: ringOpacity.toFixed(3),
+        })
+
+        // tiles
+        let aliveSum = 0
+        for (const tile of tiles) {
+          const on = clamp((t - tile.wakeAt) / WAKE_MS)
+          const off = clamp((t - tile.freezeAt) / FREEZE_MS)
+          const life = easeOutCubic(on) * (1 - easeInOutCubic(off))
+          aliveSum += life
+          const pop = spring(on) * (1 - off) + off // scale settles to 1 while freezing
+          const scale = on > 0 ? mix(0.965, 1, pop) : 0.965
+          const settle = off > 0 ? mix(scale, 0.965, easeInOutCubic(off)) : scale
+          tile.el.style.transform = `scale(${settle.toFixed(4)})`
+          tile.el.style.filter = `grayscale(${(1 - life).toFixed(3)}) contrast(${mix(0.94, 1, life).toFixed(3)}) brightness(${mix(0.82, 1, life).toFixed(3)})`
+          const rim = on > 0 && on < 1 ? Math.sin(on * Math.PI) : 0
+          tile.el.style.setProperty("--rim", rim.toFixed(3))
+        }
+
+        const ledLife = aliveSum / tiles.length
+        led.style.background = ledLife > 0.02 ? "var(--lime)" : "#4a4a4a"
+      }
+
+      // Clip time a tile shows at timeline t. Frozen on t0 until the wave hits,
+      // plays in real time, then rewinds to t0 while it greys out, so it lands on
+      // the exact frozen frame with no cut and no crossfade.
+      function clipTime(tile, t) {
+        if (t < tile.wakeAt) return tile.t0
+        if (t < tile.freezeAt) return tile.t0 + (t - tile.wakeAt) / 1000
+        const peak = tile.t0 + (tile.freezeAt - tile.wakeAt) / 1000
+        const off = clamp((t - tile.freezeAt) / FREEZE_MS)
+        return mix(peak, tile.t0, easeInOutCubic(off))
+      }
+
+      const isPlaying = (tile, t) => t >= tile.wakeAt && t < tile.freezeAt
+
+      // ---------- deterministic render (recording) ----------
+      async function render(t) {
+        apply(t)
+        await Promise.all(
+          tiles.map(async (tile) => {
+            tile.video.pause()
+            await seek(tile.video, clipTime(tile, t))
+          })
+        )
+        await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)))
+      }
+
+      // ---------- live preview ----------
+      function live() {
+        let start = performance.now()
+        const tick = (now) => {
+          let t = now - start
+          if (t >= DURATION) {
+            start = now
+            t = 0
+          }
+          apply(t)
+          for (const tile of tiles) {
+            if (isPlaying(tile, t)) {
+              if (!tile.playing) {
+                tile.video.currentTime = clipTime(tile, t)
+                tile.video.play().catch(() => {})
+                tile.playing = true
+              }
+            } else {
+              if (tile.playing) {
+                tile.video.pause()
+                tile.playing = false
+              }
+              const ct = clipTime(tile, t)
+              if (Math.abs(tile.video.currentTime - ct) > 0.03 && !tile.video.seeking) {
+                tile.video.currentTime = ct
+              }
+            }
+          }
+          requestAnimationFrame(tick)
+        }
+        requestAnimationFrame(tick)
+      }
+
+      const params = new URLSearchParams(location.search)
+      const ready = prepare()
+      window.__og = { ready, render, apply, duration: DURATION, coverMs: COVER_MS, width: 1200, height: 630 }
+      if (!params.has("still") && !params.has("record")) ready.then(live)
+    </script>
+  </body>
+</html>
