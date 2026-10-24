@@ -61,3 +61,5 @@ dev-dist
 .cursor/
 .impeccable/
 plans/
+# og:video render output (uploaded to R2, not served by the site)
+og-render/
