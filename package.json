@@ -13,7 +13,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "check": "bun run lint && bun run typecheck && bun run test",
-    "og:video": "node scripts/record-og-video.mjs"
+    "og:video": "node scripts/record-og-video.mjs",
+    "assets:orbit": "node scripts/render-orbit-assets.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.5.0",

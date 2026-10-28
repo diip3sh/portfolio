@@ -62,4 +62,7 @@ dev-dist
 .impeccable/
 plans/
 # og:video render output (uploaded to R2, not served by the site)
-og-render/
+og-render/*
+# ...but keep the Orbit asset stage source; only rendered binaries stay ignored
+!og-render/orbit/
+og-render/orbit/*.png

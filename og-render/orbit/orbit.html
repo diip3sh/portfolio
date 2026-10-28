@@ -1,0 +1,1801 @@
+<!doctype html>
+<!--
+  Orbit gallery asset stage (800x1000 per slide, rendered at 2x).
+
+  Five static scenes of Orbit, the macOS menu-bar screen recorder and editor:
+    #orbit    Editor: preview canvas with auto-zoom + full timeline lanes (card image)
+    #orbit-2  Capture: menu bar recording state + floating capture toolbar
+    #orbit-3  Quick Access: screenshot card with OCR / pin / copy actions
+    #orbit-4  Web Recording: scripted page session + MCP server + agent connect
+    #orbit-5  Export: canvas aspects, backgrounds, codecs
+
+  Render with scripts/render-orbit-assets.mjs. The PNGs are uploaded to R2, so
+  this file lives outside public/.
+
+  Fonts: SF (-apple-system) for the macOS chrome, Commit Mono for timecodes,
+  telemetry and script steps — the same mono the portfolio itself uses.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Orbit asset stage</title>
+    <style>
+      @font-face {
+        font-family: "Commit Mono";
+        src: url("/public/fonts/CommitMono-400-Regular.otf") format("opentype");
+        font-weight: 400;
+        font-display: block;
+      }
+      @font-face {
+        font-family: "Commit Mono";
+        src: url("/public/fonts/CommitMono-500-Regular.otf") format("opentype");
+        font-weight: 500;
+        font-display: block;
+      }
+
+      :root {
+        --sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue",
+          sans-serif;
+        --mono: "Commit Mono", ui-monospace, monospace;
+        --win: #1c1c1f;
+        --win-2: #242428;
+        --win-3: #2d2d32;
+        --line: rgba(255, 255, 255, 0.09);
+        --line-soft: rgba(255, 255, 255, 0.055);
+        --text: #f5f5f7;
+        --muted: #9d9da3;
+        --faint: #6e6e74;
+        --red: #ff5f57;
+        --yellow: #febc2e;
+        --green: #28c840;
+        --blue: #0a84ff;
+        --record: #ff453a;
+        --teal: #64d2ff;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      html,
+      body {
+        background: #050506;
+        font-family: var(--sans);
+        color: var(--text);
+        -webkit-font-smoothing: antialiased;
+      }
+
+      .slide {
+        position: relative;
+        width: 800px;
+        height: 1000px;
+        overflow: hidden;
+        margin-bottom: 24px;
+        background:
+          radial-gradient(120% 90% at 20% 0%, #1b1b20 0%, #101013 52%, #0a0a0c 100%);
+      }
+
+      /* ---------- shared macOS chrome ---------- */
+
+      .window {
+        position: absolute;
+        background: var(--win);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        box-shadow:
+          0 0 0 1px rgba(0, 0, 0, 0.6),
+          0 30px 80px rgba(0, 0, 0, 0.55);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+
+      .titlebar {
+        flex: none;
+        height: 46px;
+        display: flex;
+        align-items: center;
+        padding: 0 16px;
+        border-bottom: 1px solid var(--line-soft);
+        position: relative;
+      }
+
+      .lights {
+        display: flex;
+        gap: 8px;
+      }
+
+      .lights i {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        display: block;
+      }
+
+      .lights i:nth-child(1) { background: var(--red); }
+      .lights i:nth-child(2) { background: var(--yellow); }
+      .lights i:nth-child(3) { background: var(--green); }
+
+      .titlebar .doc-title {
+        position: absolute;
+        left: 0;
+        right: 0;
+        text-align: center;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--muted);
+        letter-spacing: 0.01em;
+        pointer-events: none;
+      }
+
+      .titlebar .doc-title b {
+        color: var(--text);
+        font-weight: 600;
+      }
+
+      .pill-btn {
+        flex: none;
+        height: 26px;
+        padding: 0 14px;
+        border-radius: 13px;
+        background: #f5f5f7;
+        color: #111;
+        font-size: 12px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .pill-btn.ghost {
+        background: var(--win-3);
+        color: var(--text);
+        border: 1px solid var(--line);
+      }
+
+      .mono {
+        font-family: var(--mono);
+      }
+
+      /* ================= slide 1: editor ================= */
+
+      #orbit .window {
+        inset: 36px;
+      }
+
+      .ed-toolbar {
+        flex: none;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 0 14px;
+        border-bottom: 1px solid var(--line-soft);
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      .ed-toolbar .tool {
+        width: 26px;
+        height: 26px;
+        border-radius: 7px;
+        display: grid;
+        place-items: center;
+        color: var(--muted);
+        background: transparent;
+        border: 1px solid transparent;
+      }
+
+      .ed-toolbar .tool.on {
+        background: var(--win-3);
+        border-color: var(--line);
+        color: var(--text);
+      }
+
+      .ed-toolbar .spacer {
+        flex: 1;
+      }
+
+      .ed-transport {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 13px;
+        color: var(--text);
+      }
+
+      .ed-timecode {
+        font-family: var(--mono);
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      .ed-timecode b {
+        color: var(--text);
+        font-weight: 500;
+      }
+
+      /* preview canvas */
+      .ed-preview {
+        flex: none;
+        height: 546px;
+        position: relative;
+        background:
+          radial-gradient(90% 120% at 80% 10%, rgba(120, 87, 255, 0.35) 0%, rgba(120, 87, 255, 0) 55%),
+          linear-gradient(150deg, #2b2450 0%, #1a1f3d 48%, #101522 100%);
+        display: grid;
+        place-items: center;
+        border-bottom: 1px solid var(--line-soft);
+      }
+
+      .ed-page {
+        position: relative;
+        width: 470px;
+        height: 300px;
+        border-radius: 10px;
+        background: #141416;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+        overflow: hidden;
+      }
+
+      .ed-page .pg-bar {
+        height: 30px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 0 12px;
+        background: #1e1e21;
+        border-bottom: 1px solid var(--line-soft);
+      }
+
+      .ed-page .pg-bar i {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #3a3a3f;
+      }
+
+      .ed-page .pg-url {
+        margin-left: 8px;
+        height: 16px;
+        width: 180px;
+        border-radius: 8px;
+        background: #2a2a2e;
+        color: var(--faint);
+        font-size: 9px;
+        display: flex;
+        align-items: center;
+        padding: 0 8px;
+        font-family: var(--mono);
+      }
+
+      .ed-page .pg-body {
+        padding: 18px;
+      }
+
+      .pg-h {
+        height: 12px;
+        width: 150px;
+        border-radius: 4px;
+        background: #333338;
+        margin-bottom: 14px;
+      }
+
+      .pg-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 9px 10px;
+        border-radius: 8px;
+        background: #1b1b1e;
+        border: 1px solid var(--line-soft);
+        margin-bottom: 8px;
+      }
+
+      .pg-row .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        flex: none;
+      }
+
+      .pg-row .bars {
+        flex: 1;
+      }
+
+      .pg-row .bars i {
+        display: block;
+        height: 6px;
+        border-radius: 3px;
+        background: #313136;
+      }
+
+      .pg-row .bars i + i {
+        margin-top: 5px;
+        width: 55%;
+      }
+
+      .pg-cta {
+        position: absolute;
+        right: 18px;
+        bottom: 16px;
+        height: 26px;
+        padding: 0 14px;
+        border-radius: 13px;
+        background: var(--blue);
+        color: #fff;
+        font-size: 11px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+      }
+
+      /* smoothed cursor + click ring */
+      .ed-cursor {
+        position: absolute;
+        right: 148px;
+        bottom: 96px;
+        width: 0;
+        height: 0;
+        z-index: 3;
+      }
+
+      .ed-cursor svg {
+        position: absolute;
+        left: 0;
+        top: 0;
+        filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.45));
+      }
+
+      .ed-ring {
+        position: absolute;
+        left: -14px;
+        top: -10px;
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        border: 2px solid rgba(255, 213, 79, 0.9);
+        background: rgba(255, 213, 79, 0.18);
+      }
+
+      .ed-keystroke {
+        position: absolute;
+        left: 22px;
+        bottom: 18px;
+        z-index: 3;
+        display: flex;
+        gap: 6px;
+      }
+
+      .ed-keystroke span {
+        font-family: var(--mono);
+        font-size: 11px;
+        color: var(--text);
+        background: rgba(20, 20, 24, 0.85);
+        border: 1px solid var(--line);
+        border-bottom-width: 2px;
+        border-radius: 6px;
+        padding: 4px 8px;
+      }
+
+      .ed-zoom-pill {
+        position: absolute;
+        top: 16px;
+        right: 18px;
+        z-index: 3;
+        font-family: var(--mono);
+        font-size: 11px;
+        color: #cfe6ff;
+        background: rgba(10, 132, 255, 0.18);
+        border: 1px solid rgba(10, 132, 255, 0.55);
+        border-radius: 11px;
+        padding: 4px 10px;
+      }
+
+      /* timeline */
+      .ed-timeline {
+        flex: 1;
+        display: flex;
+        min-height: 0;
+        position: relative;
+      }
+
+      .ed-lane-labels {
+        flex: none;
+        width: 96px;
+        border-right: 1px solid var(--line-soft);
+        padding-top: 26px;
+      }
+
+      .ed-lane-labels div {
+        height: 34px;
+        display: flex;
+        align-items: center;
+        padding: 0 12px;
+        font-size: 10.5px;
+        color: var(--faint);
+        letter-spacing: 0.02em;
+      }
+
+      .ed-tracks {
+        flex: 1;
+        position: relative;
+        padding-top: 26px;
+      }
+
+      .ed-ruler {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 26px;
+        border-bottom: 1px solid var(--line-soft);
+        display: flex;
+      }
+
+      .ed-ruler span {
+        flex: 1;
+        font-family: var(--mono);
+        font-size: 9px;
+        color: var(--faint);
+        padding: 6px 0 0 6px;
+        border-left: 1px solid var(--line-soft);
+      }
+
+      .ed-lane {
+        height: 34px;
+        position: relative;
+        border-bottom: 1px solid var(--line-soft);
+      }
+
+      .blk {
+        position: absolute;
+        top: 6px;
+        height: 22px;
+        border-radius: 6px;
+        font-family: var(--mono);
+        font-size: 9.5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .blk.zoom {
+        background: rgba(10, 132, 255, 0.28);
+        border: 1px solid rgba(10, 132, 255, 0.7);
+        color: #cfe6ff;
+      }
+
+      .blk.cut {
+        background: var(--win-3);
+        border: 1px solid var(--line);
+        color: var(--muted);
+      }
+
+      .key-chip {
+        position: absolute;
+        top: 7px;
+        min-width: 20px;
+        height: 20px;
+        padding: 0 5px;
+        border-radius: 5px;
+        background: var(--win-3);
+        border: 1px solid var(--line);
+        border-bottom-width: 2px;
+        font-family: var(--mono);
+        font-size: 10px;
+        color: var(--text);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .click-dot {
+        position: absolute;
+        top: 12px;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        border: 2px solid var(--yellow);
+      }
+
+      .click-dot.fill {
+        background: var(--yellow);
+      }
+
+      .ed-playhead {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 44%;
+        width: 2px;
+        background: var(--record);
+        z-index: 5;
+      }
+
+      .ed-playhead::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -5px;
+        width: 12px;
+        height: 12px;
+        border-radius: 3px 3px 6px 6px;
+        background: var(--record);
+      }
+
+      .ed-statusbar {
+        flex: none;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 0 14px;
+        border-top: 1px solid var(--line-soft);
+        font-family: var(--mono);
+        font-size: 10.5px;
+        color: var(--faint);
+      }
+
+      .ed-statusbar .ok {
+        color: var(--green);
+      }
+
+      /* ================= slide 2: capture ================= */
+
+      #orbit-2 {
+        background:
+          radial-gradient(100% 80% at 70% 20%, #20242e 0%, #121316 55%, #0a0a0c 100%);
+      }
+
+      .menubar {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 30px;
+        background: rgba(24, 24, 27, 0.82);
+        backdrop-filter: blur(20px);
+        border-bottom: 1px solid var(--line-soft);
+        display: flex;
+        align-items: center;
+        padding: 0 14px;
+        gap: 16px;
+        font-size: 12px;
+        color: rgba(255, 255, 255, 0.85);
+        z-index: 10;
+      }
+
+      .menubar .apple {
+        font-size: 14px;
+      }
+
+      .menubar .spacer {
+        flex: 1;
+      }
+
+      .menubar .mb-item {
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 12px;
+      }
+
+      .mb-rec {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-family: var(--mono);
+        font-size: 11px;
+        color: var(--text);
+        background: rgba(255, 69, 58, 0.16);
+        border: 1px solid rgba(255, 69, 58, 0.45);
+        border-radius: 10px;
+        padding: 2px 8px;
+      }
+
+      .mb-rec i {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--record);
+      }
+
+      .cap-selected {
+        position: absolute;
+        left: 88px;
+        top: 190px;
+        width: 624px;
+        height: 380px;
+        border: 2px dashed rgba(10, 132, 255, 0.85);
+        border-radius: 10px;
+        background: rgba(10, 132, 255, 0.07);
+      }
+
+      .cap-selected .cap-tag {
+        position: absolute;
+        top: -30px;
+        left: 0;
+        font-family: var(--mono);
+        font-size: 11px;
+        color: #cfe6ff;
+        background: rgba(10, 132, 255, 0.2);
+        border: 1px solid rgba(10, 132, 255, 0.55);
+        border-radius: 9px;
+        padding: 3px 9px;
+      }
+
+      .cap-selected .cap-size {
+        position: absolute;
+        right: 10px;
+        bottom: 8px;
+        font-family: var(--mono);
+        font-size: 10px;
+        color: rgba(255, 255, 255, 0.75);
+      }
+
+      .cap-selected .cap-ghost {
+        position: absolute;
+        inset: 18px;
+        border-radius: 7px;
+        background: rgba(16, 17, 21, 0.55);
+        border: 1px solid rgba(255, 255, 255, 0.07);
+        padding: 14px;
+      }
+
+      .cap-selected .cap-ghost i {
+        display: block;
+        height: 7px;
+        border-radius: 3.5px;
+        background: rgba(255, 255, 255, 0.09);
+        margin-bottom: 9px;
+      }
+
+      .cap-toolbar {
+        position: absolute;
+        left: 50%;
+        bottom: 210px;
+        transform: translateX(-50%);
+        width: 600px;
+        background: rgba(30, 30, 34, 0.92);
+        backdrop-filter: blur(24px);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        box-shadow: 0 24px 70px rgba(0, 0, 0, 0.6);
+        padding: 14px;
+      }
+
+      .cap-seg {
+        display: flex;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid var(--line-soft);
+        border-radius: 10px;
+        padding: 3px;
+        margin-bottom: 12px;
+      }
+
+      .cap-seg span {
+        flex: 1;
+        text-align: center;
+        font-size: 11.5px;
+        font-weight: 500;
+        color: var(--muted);
+        padding: 5px 0;
+        border-radius: 8px;
+      }
+
+      .cap-seg span.on {
+        background: var(--win-3);
+        color: var(--text);
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+      }
+
+      .cap-thumbs {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 12px;
+      }
+
+      .cap-thumb {
+        flex: 1;
+        height: 84px;
+        border-radius: 9px;
+        background: #17181c;
+        border: 1px solid var(--line-soft);
+        padding: 8px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .cap-thumb.sel {
+        border-color: var(--blue);
+        box-shadow: 0 0 0 1px var(--blue);
+      }
+
+      .cap-thumb i {
+        display: block;
+        height: 5px;
+        border-radius: 2.5px;
+        background: #33363d;
+        margin-bottom: 5px;
+      }
+
+      .cap-thumb i:nth-child(2) { width: 62%; }
+      .cap-thumb i:nth-child(3) { width: 84%; }
+      .cap-thumb i:nth-child(4) { width: 44%; }
+
+      .cap-thumb .cap-thumb-label {
+        position: absolute;
+        left: 8px;
+        bottom: 6px;
+        font-size: 9px;
+        color: var(--faint);
+      }
+
+      .cap-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .cap-toggle {
+        width: 30px;
+        height: 30px;
+        border-radius: 8px;
+        display: grid;
+        place-items: center;
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--faint);
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--line-soft);
+      }
+
+      .cap-toggle.on {
+        color: var(--text);
+        background: var(--win-3);
+        border-color: var(--line);
+      }
+
+      .cap-row .cap-hint {
+        flex: 1;
+        text-align: right;
+        font-family: var(--mono);
+        font-size: 10px;
+        color: var(--faint);
+      }
+
+      .cap-record {
+        flex: none;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        border: 3px solid rgba(255, 255, 255, 0.9);
+        display: grid;
+        place-items: center;
+      }
+
+      .cap-record i {
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        background: var(--record);
+      }
+
+      /* ================= slide 3: quick access ================= */
+
+      #orbit-3 {
+        background:
+          radial-gradient(110% 70% at 50% 0%, #1e2026 0%, #111214 55%, #0a0a0c 100%);
+      }
+
+      .notch {
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 210px;
+        height: 30px;
+        background: #000;
+        border-radius: 0 0 16px 16px;
+        z-index: 10;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      }
+
+      .notch .notch-thumb {
+        width: 34px;
+        height: 20px;
+        border-radius: 4px;
+        background: linear-gradient(120deg, #2c2f3a, #1b1d24);
+        border: 1px solid var(--line);
+      }
+
+      .notch span {
+        font-family: var(--mono);
+        font-size: 9px;
+        color: var(--muted);
+      }
+
+      .qa-history {
+        position: absolute;
+        top: 64px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 10px;
+      }
+
+      .qa-history .h-thumb {
+        width: 120px;
+        height: 72px;
+        border-radius: 8px;
+        background: #16171b;
+        border: 1px solid var(--line-soft);
+        padding: 7px;
+      }
+
+      .qa-history .h-thumb i {
+        display: block;
+        height: 4px;
+        border-radius: 2px;
+        background: #31343b;
+        margin-bottom: 4px;
+      }
+
+      .qa-history .h-thumb i:nth-child(2) { width: 70%; }
+      .qa-history .h-thumb i:nth-child(3) { width: 50%; }
+
+      .qa-history .h-thumb.recent {
+        border-color: rgba(10, 132, 255, 0.6);
+      }
+
+      .qa-card {
+        position: absolute;
+        left: 50%;
+        top: 250px;
+        transform: translateX(-50%);
+        width: 460px;
+        background: rgba(28, 28, 32, 0.96);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+        overflow: hidden;
+      }
+
+      .qa-head {
+        display: flex;
+        align-items: center;
+        padding: 13px 16px;
+        border-bottom: 1px solid var(--line-soft);
+      }
+
+      .qa-head b {
+        font-size: 13px;
+        font-weight: 600;
+      }
+
+      .qa-head span {
+        margin-left: auto;
+        font-family: var(--mono);
+        font-size: 10px;
+        color: var(--faint);
+      }
+
+      .qa-shot {
+        margin: 14px 16px 0;
+        height: 190px;
+        border-radius: 10px;
+        background: #101116;
+        border: 1px solid var(--line-soft);
+        padding: 14px;
+        position: relative;
+      }
+
+      .qa-shot .code-line {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 7px;
+        font-family: var(--mono);
+        font-size: 9.5px;
+      }
+
+      .qa-shot .ln {
+        color: #484c56;
+        width: 14px;
+        text-align: right;
+        flex: none;
+      }
+
+      .qa-shot .code-line i {
+        display: block;
+        height: 7px;
+        border-radius: 3px;
+        background: #2b2e37;
+      }
+
+      .qa-ocr {
+        margin: 12px 16px 0;
+        padding: 10px 12px;
+        border-radius: 10px;
+        background: rgba(10, 132, 255, 0.09);
+        border: 1px solid rgba(10, 132, 255, 0.35);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .qa-ocr .qa-ocr-text {
+        flex: 1;
+        font-family: var(--mono);
+        font-size: 10px;
+        color: #cfe6ff;
+      }
+
+      .qa-ocr .qa-ocr-badge {
+        flex: none;
+        font-size: 9.5px;
+        font-weight: 600;
+        color: var(--teal);
+        border: 1px solid rgba(100, 210, 255, 0.5);
+        border-radius: 9px;
+        padding: 2px 8px;
+      }
+
+      .qa-actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        padding: 14px 16px 16px;
+      }
+
+      .qa-action {
+        height: 38px;
+        border-radius: 10px;
+        background: var(--win-2);
+        border: 1px solid var(--line-soft);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 0 12px;
+        font-size: 11.5px;
+        font-weight: 500;
+        color: var(--text);
+      }
+
+      .qa-action kbd {
+        margin-left: auto;
+        font-family: var(--mono);
+        font-size: 9.5px;
+        color: var(--faint);
+      }
+
+      .qa-action.primary {
+        background: #f5f5f7;
+        color: #111;
+      }
+
+      .qa-action.primary kbd {
+        color: #666;
+      }
+
+      .qa-meta {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 96px;
+        text-align: center;
+        font-family: var(--mono);
+        font-size: 10.5px;
+        color: var(--faint);
+      }
+
+      /* ================= slide 4: web recording ================= */
+
+      #orbit-4 .window {
+        inset: 36px;
+      }
+
+      .wr-body {
+        flex: 1;
+        display: flex;
+        min-height: 0;
+      }
+
+      .wr-script {
+        flex: none;
+        width: 300px;
+        border-right: 1px solid var(--line-soft);
+        display: flex;
+        flex-direction: column;
+      }
+
+      .wr-script-head {
+        flex: none;
+        padding: 12px 14px;
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--muted);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        border-bottom: 1px solid var(--line-soft);
+      }
+
+      .wr-step {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 9px 14px;
+        border-bottom: 1px solid var(--line-soft);
+        font-family: var(--mono);
+        font-size: 10.5px;
+        color: var(--muted);
+      }
+
+      .wr-step .n {
+        flex: none;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: var(--win-3);
+        border: 1px solid var(--line);
+        color: var(--text);
+        font-size: 9px;
+        display: grid;
+        place-items: center;
+      }
+
+      .wr-step.done .n {
+        background: rgba(40, 200, 64, 0.18);
+        border-color: rgba(40, 200, 64, 0.6);
+        color: #b8f0c2;
+      }
+
+      .wr-step.run .n {
+        background: rgba(10, 132, 255, 0.2);
+        border-color: rgba(10, 132, 255, 0.7);
+        color: #cfe6ff;
+      }
+
+      .wr-step b {
+        color: var(--text);
+        font-weight: 500;
+      }
+
+      .wr-preview {
+        flex: 1;
+        position: relative;
+        background:
+          radial-gradient(80% 90% at 70% 20%, rgba(20, 184, 166, 0.14) 0%, rgba(20, 184, 166, 0) 55%),
+          linear-gradient(160deg, #17222b 0%, #101720 55%, #0c1118 100%);
+        display: grid;
+        place-items: center;
+      }
+
+      .wr-page {
+        position: relative;
+        width: 330px;
+        height: 240px;
+        border-radius: 9px;
+        background: #f7f7f8;
+        overflow: hidden;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+      }
+
+      .wr-page .wp-hero {
+        height: 74px;
+        background: linear-gradient(120deg, #101828, #1d2b45);
+      }
+
+      .wr-page .wp-body {
+        padding: 14px;
+      }
+
+      .wr-page .wp-line {
+        height: 8px;
+        border-radius: 4px;
+        background: #dfe1e6;
+        margin-bottom: 8px;
+      }
+
+      .wr-page .wp-line:nth-child(2) { width: 70%; }
+      .wr-page .wp-line:nth-child(3) { width: 52%; }
+
+      .wr-page .wp-btn {
+        display: inline-flex;
+        align-items: center;
+        height: 26px;
+        padding: 0 14px;
+        border-radius: 13px;
+        background: #101828;
+        color: #fff;
+        font-size: 10.5px;
+        font-weight: 600;
+        margin-top: 6px;
+        position: relative;
+      }
+
+      .wr-highlight {
+        position: absolute;
+        left: 22px;
+        bottom: 58px;
+        width: 108px;
+        height: 34px;
+        border-radius: 16px;
+        border: 2px solid var(--teal);
+        box-shadow: 0 0 0 4px rgba(100, 210, 255, 0.15);
+      }
+
+      .wr-cursor {
+        position: absolute;
+        left: 118px;
+        bottom: 52px;
+        z-index: 3;
+      }
+
+      .wr-foot {
+        flex: none;
+        border-top: 1px solid var(--line-soft);
+        padding: 12px 14px 14px;
+      }
+
+      .wr-mcp {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-family: var(--mono);
+        font-size: 10.5px;
+        color: var(--muted);
+        margin-bottom: 10px;
+      }
+
+      .wr-mcp .live {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        color: #b8f0c2;
+      }
+
+      .wr-mcp .live i {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--green);
+      }
+
+      .wr-mcp .tool-chip {
+        border: 1px solid var(--line);
+        background: var(--win-2);
+        border-radius: 9px;
+        padding: 2px 8px;
+        color: var(--text);
+      }
+
+      .wr-agents {
+        display: flex;
+        gap: 8px;
+      }
+
+      .wr-agent {
+        flex: 1;
+        height: 40px;
+        border-radius: 10px;
+        background: var(--win-2);
+        border: 1px solid var(--line-soft);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 0 10px;
+        gap: 2px;
+      }
+
+      .wr-agent b {
+        font-size: 10.5px;
+        font-weight: 600;
+      }
+
+      .wr-agent span {
+        font-family: var(--mono);
+        font-size: 8.5px;
+        color: var(--faint);
+      }
+
+      .wr-agent.linked {
+        border-color: rgba(40, 200, 64, 0.45);
+      }
+
+      .wr-agent.linked span {
+        color: #b8f0c2;
+      }
+
+      /* ================= slide 5: export ================= */
+
+      #orbit-5 .window {
+        inset: 36px;
+      }
+
+      .ex-body {
+        flex: 1;
+        padding: 18px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        min-height: 0;
+      }
+
+      .ex-section-label {
+        font-size: 10.5px;
+        font-weight: 600;
+        color: var(--faint);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        margin-bottom: 8px;
+      }
+
+      .ex-aspects {
+        display: flex;
+        gap: 10px;
+      }
+
+      .ex-aspect {
+        flex: 1;
+        border-radius: 11px;
+        background: var(--win-2);
+        border: 1px solid var(--line-soft);
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .ex-aspect.sel {
+        border-color: var(--blue);
+        box-shadow: 0 0 0 1px var(--blue);
+      }
+
+      .ex-aspect .frame {
+        border-radius: 5px;
+        background: linear-gradient(140deg, #33354a, #1b1d2a);
+        border: 1px solid var(--line);
+      }
+
+      .ex-aspect span {
+        font-family: var(--mono);
+        font-size: 10px;
+        color: var(--muted);
+      }
+
+      .ex-aspect.sel span {
+        color: var(--text);
+      }
+
+      .ex-bgs {
+        display: flex;
+        gap: 10px;
+      }
+
+      .ex-bg {
+        flex: 1;
+        height: 56px;
+        border-radius: 11px;
+        border: 1px solid var(--line-soft);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .ex-bg.sel {
+        border-color: var(--blue);
+        box-shadow: 0 0 0 1px var(--blue);
+      }
+
+      .ex-bg span {
+        position: absolute;
+        left: 8px;
+        bottom: 6px;
+        font-size: 9.5px;
+        color: rgba(255, 255, 255, 0.85);
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+      }
+
+      .ex-bg.gradient {
+        background: linear-gradient(130deg, #7857ff, #19c2ff);
+      }
+
+      .ex-bg.colour {
+        background: #c8a24a;
+      }
+
+      .ex-bg.picture {
+        background:
+          radial-gradient(80% 100% at 30% 20%, #3a4d68, #141a24);
+      }
+
+      .ex-bg.alpha {
+        background:
+          repeating-conic-gradient(#3a3a3f 0% 25%, #26262b 0% 50%) 0 0 / 16px 16px;
+      }
+
+      .ex-codecs {
+        border: 1px solid var(--line-soft);
+        border-radius: 11px;
+        overflow: hidden;
+      }
+
+      .ex-codec {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 14px;
+        border-bottom: 1px solid var(--line-soft);
+        font-size: 12px;
+      }
+
+      .ex-codec:last-child {
+        border-bottom: none;
+      }
+
+      .ex-codec .radio {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        border: 1.5px solid var(--faint);
+        flex: none;
+      }
+
+      .ex-codec.sel .radio {
+        border: 4.5px solid var(--blue);
+      }
+
+      .ex-codec b {
+        font-weight: 600;
+      }
+
+      .ex-codec .note {
+        margin-left: auto;
+        font-family: var(--mono);
+        font-size: 9.5px;
+        color: var(--faint);
+      }
+
+      .ex-sliders {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        border: 1px solid var(--line-soft);
+        border-radius: 11px;
+        padding: 14px;
+      }
+
+      .ex-slider {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 11.5px;
+        color: var(--muted);
+      }
+
+      .ex-slider label {
+        flex: none;
+        width: 110px;
+      }
+
+      .ex-slider .track {
+        flex: 1;
+        height: 4px;
+        border-radius: 2px;
+        background: var(--win-3);
+        position: relative;
+      }
+
+      .ex-slider .track i {
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        border-radius: 2px;
+        background: var(--blue);
+      }
+
+      .ex-slider .track i::after {
+        content: "";
+        position: absolute;
+        right: -6px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: #f5f5f7;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+      }
+
+      .ex-slider .val {
+        flex: none;
+        width: 44px;
+        text-align: right;
+        font-family: var(--mono);
+        font-size: 10px;
+        color: var(--faint);
+      }
+
+      .ex-foot {
+        flex: none;
+        display: flex;
+        align-items: center;
+        padding: 14px 18px;
+        border-top: 1px solid var(--line-soft);
+      }
+
+      .ex-foot .ex-meta {
+        font-family: var(--mono);
+        font-size: 10.5px;
+        color: var(--muted);
+      }
+
+      .ex-foot .spacer {
+        flex: 1;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ============ slide 1 · editor (card image) ============ -->
+    <section class="slide" id="orbit">
+      <div class="window">
+        <div class="titlebar">
+          <div class="lights"><i></i><i></i><i></i></div>
+          <div class="doc-title"><b>Launch demo</b> — Orbit</div>
+          <div style="margin-left:auto; display:flex; gap:8px;">
+            <span class="pill-btn ghost">Share</span>
+            <span class="pill-btn">Export</span>
+          </div>
+        </div>
+        <div class="ed-toolbar">
+          <span class="tool on">✂</span>
+          <span class="tool">⌗</span>
+          <span class="tool">⊕</span>
+          <span class="spacer"></span>
+          <div class="ed-transport">
+            <span>⏮</span><span>▶</span><span>⏭</span>
+            <span class="ed-timecode"><b>00:13.6</b> / 00:31.0</span>
+          </div>
+          <span class="spacer"></span>
+          <span class="ed-timecode">16:9 · 4K · 60</span>
+        </div>
+        <div class="ed-preview">
+          <div class="ed-page">
+            <div class="pg-bar">
+              <i></i><i></i><i></i>
+              <span class="pg-url">https://linear.app/demo/issues</span>
+            </div>
+            <div class="pg-body">
+              <div class="pg-h"></div>
+              <div class="pg-row">
+                <span class="dot" style="background:#f87171"></span>
+                <span class="bars"><i style="width:82%"></i><i></i></span>
+              </div>
+              <div class="pg-row">
+                <span class="dot" style="background:#facc15"></span>
+                <span class="bars"><i style="width:64%"></i><i></i></span>
+              </div>
+              <div class="pg-row">
+                <span class="dot" style="background:#4ade80"></span>
+                <span class="bars"><i style="width:74%"></i><i></i></span>
+              </div>
+            </div>
+            <span class="pg-cta">New issue</span>
+          </div>
+          <div class="ed-zoom-pill">2.4× auto-zoom</div>
+          <div class="ed-keystroke"><span>⌘</span><span>↩</span></div>
+          <div class="ed-cursor">
+            <span class="ed-ring"></span>
+            <svg width="18" height="24" viewBox="0 0 18 24">
+              <path d="M1 1 L1 18 L5.5 14.5 L8.5 21 L11 19.6 L8 13 L14 13 Z"
+                fill="#fff" stroke="#000" stroke-width="1.2" />
+            </svg>
+          </div>
+        </div>
+        <div class="ed-timeline">
+          <div class="ed-lane-labels">
+            <div>Zooms</div>
+            <div>Cuts</div>
+            <div>Keys</div>
+            <div>Clicks</div>
+            <div>Highlights</div>
+            <div>Audio</div>
+          </div>
+          <div class="ed-tracks">
+            <div class="ed-ruler">
+              <span>0:00</span><span>0:05</span><span>0:10</span><span>0:15</span><span>0:20</span><span>0:25</span><span>0:30</span>
+            </div>
+            <div class="ed-lane">
+              <span class="blk zoom" style="left:6%; width:18%">1.8×</span>
+              <span class="blk zoom" style="left:38%; width:22%">2.4×</span>
+              <span class="blk zoom" style="left:72%; width:16%">2.0×</span>
+            </div>
+            <div class="ed-lane">
+              <span class="blk cut" style="left:30%; width:8%">cut</span>
+              <span class="blk cut" style="left:62%; width:6%">cut</span>
+            </div>
+            <div class="ed-lane">
+              <span class="key-chip" style="left:12%">S</span>
+              <span class="key-chip" style="left:42%">⌘</span>
+              <span class="key-chip" style="left:47%">↩</span>
+              <span class="key-chip" style="left:80%">⌫</span>
+            </div>
+            <div class="ed-lane">
+              <span class="click-dot fill" style="left:10%"></span>
+              <span class="click-dot" style="left:26%"></span>
+              <span class="click-dot fill" style="left:44%"></span>
+              <span class="click-dot" style="left:58%"></span>
+              <span class="click-dot fill" style="left:76%"></span>
+            </div>
+            <div class="ed-lane">
+              <span class="blk" style="left:8%; width:14%; top:9px; height:16px; background:rgba(254,188,46,.12); border:1px solid rgba(254,188,46,.4)"></span>
+              <span class="blk" style="left:40%; width:18%; top:9px; height:16px; background:rgba(254,188,46,.12); border:1px solid rgba(254,188,46,.4)"></span>
+              <span class="blk" style="left:74%; width:12%; top:9px; height:16px; background:rgba(254,188,46,.12); border:1px solid rgba(254,188,46,.4)"></span>
+            </div>
+            <div class="ed-lane">
+              <svg width="100%" height="34" preserveAspectRatio="none" viewBox="0 0 600 34">
+                <path d="M0 17 L10 15 L20 19 L30 12 L40 22 L50 9 L60 25 L70 14 L80 20 L90 16 L100 18 L110 13 L120 21 L130 10 L140 24 L150 15 L160 19 L170 17 L180 16 L190 20 L200 12 L210 22 L220 14 L230 18 L240 16 L250 17 L260 19 L270 13 L280 21 L290 11 L300 23 L310 15 L320 19 L330 17 L340 16 L350 18 L360 14 L370 20 L380 12 L390 22 L400 15 L410 19 L420 17 L430 16 L440 18 L450 13 L460 21 L470 10 L480 24 L490 14 L500 20 L510 16 L520 17 L530 15 L540 19 L550 12 L560 22 L570 14 L580 18 L590 16 L600 17"
+                  fill="none" stroke="#5b5b62" stroke-width="1.5" />
+              </svg>
+            </div>
+            <div class="ed-playhead"></div>
+          </div>
+        </div>
+        <div class="ed-statusbar">
+          <span>Launch demo.orbit</span>
+          <span>·</span>
+          <span>3840×2160 ProRes 4444</span>
+          <span style="flex:1"></span>
+          <span class="ok">● auto-zoom on · cursor smoothed</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ slide 2 · capture ============ -->
+    <section class="slide" id="orbit-2">
+      <div class="menubar">
+        <span class="mb-item" style="color:#fff; font-weight:600">Finder</span>
+        <span class="mb-item">File</span>
+        <span class="mb-item">Edit</span>
+        <span class="mb-item">View</span>
+        <span class="spacer"></span>
+        <span class="mb-rec"><i></i>00:42</span>
+        <span class="mb-item mono" style="font-size:11px">orbit</span>
+        <span class="mb-item" style="font-size:11px">Tue 2:14 PM</span>
+      </div>
+
+      <div class="cap-selected">
+        <span class="cap-tag">Window — Linear</span>
+        <div class="cap-ghost">
+          <i style="width:34%"></i>
+          <i style="width:82%"></i>
+          <i style="width:64%"></i>
+          <i style="width:74%"></i>
+          <i style="width:48%"></i>
+          <i style="width:70%"></i>
+        </div>
+        <span class="cap-size">1452 × 912</span>
+      </div>
+
+      <div class="cap-toolbar">
+        <div class="cap-seg">
+          <span>Screen</span>
+          <span class="on">Window</span>
+          <span>Area</span>
+        </div>
+        <div class="cap-thumbs">
+          <div class="cap-thumb sel">
+            <i></i><i></i><i></i><i></i>
+            <span class="cap-thumb-label">Linear</span>
+          </div>
+          <div class="cap-thumb">
+            <i></i><i></i><i></i><i></i>
+            <span class="cap-thumb-label">Safari</span>
+          </div>
+          <div class="cap-thumb">
+            <i></i><i></i><i></i><i></i>
+            <span class="cap-thumb-label">Terminal</span>
+          </div>
+        </div>
+        <div class="cap-row">
+          <span class="cap-toggle on" title="System audio">A</span>
+          <span class="cap-toggle on" title="Microphone">M</span>
+          <span class="cap-toggle" title="Camera">C</span>
+          <span class="cap-hint">5 s countdown · ⌘6</span>
+          <span class="cap-record"><i></i></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ slide 3 · quick access ============ -->
+    <section class="slide" id="orbit-3">
+      <div class="notch">
+        <span class="notch-thumb"></span>
+        <span>2 new shots</span>
+      </div>
+
+      <div class="qa-history">
+        <div class="h-thumb recent"><i style="width:80%"></i><i></i><i></i></div>
+        <div class="h-thumb"><i style="width:65%"></i><i></i><i></i></div>
+        <div class="h-thumb"><i style="width:88%"></i><i></i><i></i></div>
+      </div>
+
+      <div class="qa-card">
+        <div class="qa-head">
+          <b>Quick Access</b>
+          <span>Area · 1452×912 · 2:14 PM</span>
+        </div>
+        <div class="qa-shot">
+          <div class="code-line"><span class="ln">12</span><i style="width:52%"></i></div>
+          <div class="code-line"><span class="ln">13</span><i style="width:74%"></i></div>
+          <div class="code-line"><span class="ln">14</span><i style="width:38%"></i></div>
+          <div class="code-line"><span class="ln">15</span><i style="width:66%"></i></div>
+          <div class="code-line"><span class="ln">16</span><i style="width:30%"></i></div>
+          <div class="code-line"><span class="ln">17</span><i style="width:58%"></i></div>
+          <div class="code-line"><span class="ln">18</span><i style="width:44%"></i></div>
+          <div class="code-line"><span class="ln">19</span><i style="width:70%"></i></div>
+        </div>
+        <div class="qa-ocr">
+          <span class="qa-ocr-text">"export_recording(take, { codec: 'hevc' })"</span>
+          <span class="qa-ocr-badge">OCR ✓</span>
+        </div>
+        <div class="qa-actions">
+          <span class="qa-action primary">Copy<kbd>⌘C</kbd></span>
+          <span class="qa-action">Save<kbd>⌘S</kbd></span>
+          <span class="qa-action">Pin on screen<kbd>⌘P</kbd></span>
+          <span class="qa-action">Drag to app<kbd>⠿</kbd></span>
+        </div>
+      </div>
+
+      <div class="qa-meta">kept for 30 days · newest in the notch</div>
+    </section>
+
+    <!-- ============ slide 4 · web recording ============ -->
+    <section class="slide" id="orbit-4">
+      <div class="window">
+        <div class="titlebar">
+          <div class="lights"><i></i><i></i><i></i></div>
+          <div class="doc-title"><b>Web Recording</b> — Orbit</div>
+          <div style="margin-left:auto;">
+            <span class="pill-btn">Render to editor</span>
+          </div>
+        </div>
+        <div class="wr-body">
+          <div class="wr-script">
+            <div class="wr-script-head">Script</div>
+            <div class="wr-step done"><span class="n">✓</span><span><b>goto</b> /pricing</span></div>
+            <div class="wr-step done"><span class="n">✓</span><span><b>hover</b> #get-started</span></div>
+            <div class="wr-step run"><span class="n">3</span><span><b>click</b> #get-started</span></div>
+            <div class="wr-step"><span class="n">4</span><span><b>type</b> "team@orbit.app"</span></div>
+            <div class="wr-step"><span class="n">5</span><span><b>zoom</b> 2.0× · 400 ms</span></div>
+            <div class="wr-step"><span class="n">6</span><span><b>scroll</b> to #faq</span></div>
+            <div class="wr-step"><span class="n">7</span><span><b>wait</b> 800 ms</span></div>
+          </div>
+          <div class="wr-preview">
+            <div class="wr-page">
+              <div class="wp-hero"></div>
+              <div class="wp-body">
+                <div class="wp-line" style="width:88%"></div>
+                <div class="wp-line"></div>
+                <div class="wp-line"></div>
+                <span class="wp-btn">Get started</span>
+              </div>
+              <div class="wr-highlight"></div>
+              <div class="wr-cursor">
+                <svg width="18" height="24" viewBox="0 0 18 24">
+                  <path d="M1 1 L1 18 L5.5 14.5 L8.5 21 L11 19.6 L8 13 L14 13 Z"
+                    fill="#fff" stroke="#000" stroke-width="1.2" />
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="wr-foot">
+          <div class="wr-mcp">
+            <span class="live"><i></i>MCP · 127.0.0.1:7331</span>
+            <span style="flex:1"></span>
+            <span class="tool-chip">inspect_page</span>
+            <span class="tool-chip">record_page</span>
+            <span class="tool-chip">export_recording</span>
+          </div>
+          <div class="wr-agents">
+            <div class="wr-agent linked"><b>Claude Code</b><span>connected ✓</span></div>
+            <div class="wr-agent linked"><b>Cursor</b><span>connected ✓</span></div>
+            <div class="wr-agent"><b>Codex</b><span>connect</span></div>
+            <div class="wr-agent"><b>Gemini CLI</b><span>connect</span></div>
+            <div class="wr-agent"><b>OpenCode</b><span>connect</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ slide 5 · export ============ -->
+    <section class="slide" id="orbit-5">
+      <div class="window">
+        <div class="titlebar">
+          <div class="lights"><i></i><i></i><i></i></div>
+          <div class="doc-title"><b>Export</b> — Launch demo</div>
+        </div>
+        <div class="ex-body">
+          <div>
+            <div class="ex-section-label">Canvas</div>
+            <div class="ex-aspects">
+              <div class="ex-aspect sel">
+                <div class="frame" style="width:96px; height:54px"></div>
+                <span>16:9</span>
+              </div>
+              <div class="ex-aspect">
+                <div class="frame" style="width:34px; height:60px"></div>
+                <span>9:16</span>
+              </div>
+              <div class="ex-aspect">
+                <div class="frame" style="width:54px; height:54px"></div>
+                <span>1:1</span>
+              </div>
+              <div class="ex-aspect">
+                <div class="frame" style="width:64px; height:48px"></div>
+                <span>4:3</span>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="ex-section-label">Background</div>
+            <div class="ex-bgs">
+              <div class="ex-bg gradient"><span>Gradient</span></div>
+              <div class="ex-bg colour"><span>Colour</span></div>
+              <div class="ex-bg picture"><span>Picture</span></div>
+              <div class="ex-bg alpha sel"><span>Transparent</span></div>
+            </div>
+          </div>
+          <div>
+            <div class="ex-section-label">Codec</div>
+            <div class="ex-codecs">
+              <div class="ex-codec"><span class="radio"></span><b>HEVC</b><span class="note">smallest file</span></div>
+              <div class="ex-codec"><span class="radio"></span><b>H.264</b><span class="note">everywhere</span></div>
+              <div class="ex-codec"><span class="radio"></span><b>ProRes 422</b><span class="note">editing</span></div>
+              <div class="ex-codec sel"><span class="radio"></span><b>ProRes 4444</b><span class="note">keeps transparency</span></div>
+            </div>
+          </div>
+          <div>
+            <div class="ex-section-label">Style</div>
+            <div class="ex-sliders">
+              <div class="ex-slider">
+                <label>Padding</label>
+                <span class="track"><i style="width:38%"></i></span>
+                <span class="val">96 px</span>
+              </div>
+              <div class="ex-slider">
+                <label>Corner radius</label>
+                <span class="track"><i style="width:22%"></i></span>
+                <span class="val">18 px</span>
+              </div>
+              <div class="ex-slider">
+                <label>Shadow</label>
+                <span class="track"><i style="width:56%"></i></span>
+                <span class="val">0.45</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="ex-foot">
+          <span class="ex-meta">3840×2160 · 60 fps · 31.0 s</span>
+          <span class="spacer"></span>
+          <span class="pill-btn ghost" style="margin-right:8px">Cancel</span>
+          <span class="pill-btn">Export</span>
+        </div>
+      </div>
+    </section>
+
+    <script>
+      document.fonts.ready.then(() => {
+        document.body.dataset.ready = "true"
+      })
+    </script>
+  </body>
+</html>
