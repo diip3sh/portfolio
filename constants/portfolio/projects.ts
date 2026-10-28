@@ -193,8 +193,35 @@ export const portfolioProjects: PortfolioProject[] = [
     order: 0,
     media: [
       {
-        type: "placeholder",
-        alt: "Orbit menu bar screen recorder and video editor",
+        type: "image",
+        src: "https://pub-17f1ae3c481641228230d1b2dcdc07ff.r2.dev/projects/orbit.png",
+        alt: "Orbit editor: preview canvas with auto-zoom above timeline lanes for zooms, cuts, keys, clicks, highlights, and audio",
+      },
+      {
+        type: "image",
+        src: "https://pub-17f1ae3c481641228230d1b2dcdc07ff.r2.dev/projects/orbit-2.png",
+        alt: "Orbit capture toolbar picking a window to record while the menu bar timer runs",
+        row: 1,
+        cell: 1,
+      },
+      {
+        type: "image",
+        src: "https://pub-17f1ae3c481641228230d1b2dcdc07ff.r2.dev/projects/orbit-3.png",
+        alt: "Orbit Quick Access card with OCR, copy, save, and pin actions for a fresh screenshot",
+        row: 1,
+        cell: 1,
+      },
+      {
+        type: "image",
+        src: "https://pub-17f1ae3c481641228230d1b2dcdc07ff.r2.dev/projects/orbit-4.png",
+        alt: "Orbit Web Recording window running a scripted page session with the MCP server connected to Claude Code and Cursor",
+        row: 1,
+      },
+      {
+        type: "image",
+        src: "https://pub-17f1ae3c481641228230d1b2dcdc07ff.r2.dev/projects/orbit-5.png",
+        alt: "Orbit export sheet with canvas aspects, backgrounds, and ProRes 4444 keeping transparency",
+        row: 1,
       },
     ],
     stack: [
