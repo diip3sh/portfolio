@@ -58,4 +58,47 @@ describe("portfolio navigation accessibility", () => {
     expect(scrollRegion).toHaveAttribute("tabindex", "0")
     expect(scrollRegion).toHaveClass("focus-visible:outline-2")
   })
+
+  it("restores a persisted column's scroll position after remounting", () => {
+    sessionStorage.clear()
+    const renderColumn = () =>
+      render(
+        <ScrollColumn
+          ariaLabel="Project gallery"
+          persistKey="gallery"
+          showProgress={false}
+        >
+          <p>Gallery content</p>
+        </ScrollColumn>
+      )
+
+    const { unmount } = renderColumn()
+    screen.getByRole("region", { name: "Project gallery" }).scrollTop = 640
+    unmount()
+    renderColumn()
+
+    expect(
+      screen.getByRole("region", { name: "Project gallery" }).scrollTop
+    ).toBe(640)
+  })
+
+  it("starts unpersisted columns at the top", () => {
+    sessionStorage.clear()
+    const { unmount } = render(
+      <ScrollColumn ariaLabel="Project gallery" showProgress={false}>
+        <p>Gallery content</p>
+      </ScrollColumn>
+    )
+    screen.getByRole("region", { name: "Project gallery" }).scrollTop = 640
+    unmount()
+    render(
+      <ScrollColumn ariaLabel="Project gallery" showProgress={false}>
+        <p>Gallery content</p>
+      </ScrollColumn>
+    )
+
+    expect(
+      screen.getByRole("region", { name: "Project gallery" }).scrollTop
+    ).toBe(0)
+  })
 })

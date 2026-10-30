@@ -3,7 +3,7 @@
 import * as React from "react";
 import { useTheme } from "next-themes";
 
-const glassIconUrl = "/emblem.png";
+const glassIconUrl = "/emblem.webp";
 const lensSize = 180;
 const lensOverflow = 72;
 
@@ -41,8 +41,8 @@ const LiquidGlassBlob = () => {
 
   const backgroundImageUrl =
     isMounted && resolvedTheme === "light"
-      ? "/grid-background-light.png"
-      : "/grid-background-dark.png";
+      ? "/grid-background-light.webp"
+      : "/grid-background-dark.webp";
 
   const containerRef = React.useRef<HTMLDivElement | null>(null);
   const sceneRef = React.useRef<HTMLDivElement | null>(null);

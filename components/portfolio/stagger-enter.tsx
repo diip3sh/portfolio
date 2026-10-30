@@ -1,64 +1,18 @@
-"use client"
+import type { ReactNode } from "react"
 
-import { motion, type Variants } from "motion/react"
-import { useState, type ReactNode } from "react"
+import { cn } from "@/lib/utils"
 
-const container: Variants = {
-  hidden: {},
-  visible: {
-    transition: { staggerChildren: 0.12, delayChildren: 0.05 },
-  },
-}
-
-const item: Variants = {
-  hidden: { opacity: 0, y: 16 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    // Tween with an ease-out curve — transform + opacity only, so every
-    // frame composites on the GPU (no blur/filter repaint = no jank).
-    transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] },
-  },
-}
-
-type StaggerEnterProps = {
+type StaggerProps = {
   children: ReactNode
   className?: string
 }
 
-export const StaggerEnter = ({ children, className }: StaggerEnterProps) => {
-  return (
-    <motion.div
-      className={className}
-      variants={container}
-      initial="hidden"
-      animate="visible"
-    >
-      {children}
-    </motion.div>
-  )
+export const StaggerEnter = ({ children, className }: StaggerProps) => {
+  return <div className={className}>{children}</div>
 }
 
-type StaggerItemProps = {
-  children: ReactNode
-  className?: string
-}
-
-export const StaggerItem = ({ children, className }: StaggerItemProps) => {
-  const [settled, setSettled] = useState(false)
-
-  return (
-    <motion.div
-      className={className}
-      variants={item}
-      // Hint the compositor while moving, then drop it on land so the column
-      // doesn't keep a permanent GPU layer (which can blur subpixel text).
-      style={{ willChange: settled ? "auto" : "transform, opacity" }}
-      onAnimationComplete={(definition) => {
-        if (definition === "visible") setSettled(true)
-      }}
-    >
-      {children}
-    </motion.div>
-  )
+// Runs from CSS so the page paints before hydration. A JS entrance would ship
+// the prerendered HTML at opacity 0 until every client chunk has loaded.
+export const StaggerItem = ({ children, className }: StaggerProps) => {
+  return <div className={cn("stagger-item", className)}>{children}</div>
 }

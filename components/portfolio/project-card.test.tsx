@@ -1,5 +1,5 @@
-import { cleanup, render, screen } from "@testing-library/react"
-import { afterEach, describe, expect, it } from "vitest"
+import { cleanup, fireEvent, render, screen } from "@testing-library/react"
+import { afterEach, describe, expect, it, vi } from "vitest"
 
 import { ProjectCard } from "@/components/portfolio/project-card"
 import type { PortfolioProject } from "@/constants/types"
@@ -23,7 +23,10 @@ const project: PortfolioProject = {
   ],
 }
 
-afterEach(cleanup)
+afterEach(() => {
+  cleanup()
+  vi.restoreAllMocks()
+})
 
 describe("ProjectCard media loading", () => {
   it("keeps the placeholder behind a visible prioritized image", () => {
@@ -46,5 +49,33 @@ describe("ProjectCard media loading", () => {
       "loading",
       "lazy"
     )
+  })
+
+  it("keeps an autoplaying video running when the pointer leaves", () => {
+    vi.spyOn(HTMLMediaElement.prototype, "load").mockImplementation(() => {})
+    vi.spyOn(HTMLMediaElement.prototype, "play").mockResolvedValue()
+    const pause = vi
+      .spyOn(HTMLMediaElement.prototype, "pause")
+      .mockImplementation(() => {})
+
+    render(
+      <ProjectCard
+        project={{
+          ...project,
+          media: [
+            {
+              type: "video",
+              src: "https://example.com/demo.mp4",
+              alt: "Autoplay preview",
+              autoPlay: true,
+            },
+          ],
+        }}
+      />
+    )
+    pause.mockClear()
+    fireEvent.mouseLeave(screen.getByLabelText("Autoplay preview"))
+
+    expect(pause).not.toHaveBeenCalled()
   })
 })

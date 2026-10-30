@@ -19,6 +19,8 @@ export type ProjectMedia = {
       poster?: string
       width?: number
       height?: number
+      // Loops whenever it is on screen instead of playing on hover.
+      autoPlay?: boolean
     }
 )
 

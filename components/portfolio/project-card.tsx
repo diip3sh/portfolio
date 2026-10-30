@@ -7,8 +7,10 @@ import { motion, useReducedMotion } from "motion/react"
 
 import { cn } from "@/lib/utils"
 import type { PortfolioProject } from "@/constants/types"
+import { LazyVideo } from "@/components/portfolio/lazy-video"
 import { MediaPlaceholder } from "@/components/portfolio/media-placeholder"
 import { hoverPlayHandlers } from "@/lib/hover-play"
+import { optimizedPoster } from "@/lib/optimized-poster"
 
 type ProjectCardProps = {
   project: PortfolioProject
@@ -21,6 +23,7 @@ const MEDIA_RADIUS_PX = 4
 // Bottom inset = heading-band height, so the media ends just above the band
 // and its rounded bottom corners stay visible.
 const HOVER_BOTTOM_INSET_PX = 42
+const CARD_POSTER_DISPLAY_WIDTH = 540
 
 const ProjectImageMedia = ({
   isPriority,
@@ -63,7 +66,7 @@ const ProjectVideoMedia = ({
         loop
         playsInline
         preload="metadata"
-        poster={media.poster}
+        poster={optimizedPoster(media.poster, CARD_POSTER_DISPLAY_WIDTH)}
         aria-label={media.alt}
         onLoadedData={() => setIsReady(true)}
         {...hoverPlayHandlers}
@@ -97,7 +100,11 @@ const ProjectMedia = ({
   }
 
   if (media.type === "video") {
-    return <ProjectVideoMedia media={media} />
+    return media.autoPlay ? (
+      <LazyVideo media={media} />
+    ) : (
+      <ProjectVideoMedia media={media} />
+    )
   }
 
   return (

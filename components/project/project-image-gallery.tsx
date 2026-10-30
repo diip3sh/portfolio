@@ -2,9 +2,13 @@
 
 import Image from "next/image"
 
+import { LazyVideo } from "@/components/portfolio/lazy-video"
 import { hoverPlayHandlers } from "@/lib/hover-play"
+import { optimizedPoster } from "@/lib/optimized-poster"
 
 import type { ProjectGalleryImage } from "@/constants/types"
+
+const GALLERY_POSTER_DISPLAY_WIDTH = 800
 
 type ProjectImageGalleryProps = {
   images: ProjectGalleryImage[]
@@ -36,6 +40,14 @@ const GalleryImage = ({
   }
 
   if (image.type === "video") {
+    if (image.autoPlay) {
+      return (
+        <div className="overflow-hidden rounded-project">
+          <LazyVideo media={image} />
+        </div>
+      )
+    }
+
     return (
       <div className="overflow-hidden rounded-project">
         <video
@@ -44,7 +56,7 @@ const GalleryImage = ({
           playsInline
           tabIndex={0}
           preload="metadata"
-          poster={image.poster}
+          poster={optimizedPoster(image.poster, GALLERY_POSTER_DISPLAY_WIDTH)}
           aria-label={image.alt}
           {...hoverPlayHandlers}
           className="h-auto w-full object-contain"

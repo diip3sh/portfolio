@@ -258,8 +258,10 @@ export const portfolioProjects: PortfolioProject[] = [
     order: 2,
     media: [
       {
-        type: "image",
-        src: "https://raw.githubusercontent.com/diip3sh/playthrou/main/.github/media/demo.gif",
+        type: "video",
+        src: "/projects/playthrou-demo.mp4",
+        poster: "/projects/playthrou-poster.jpg",
+        autoPlay: true,
         alt: "Playthru driving a live issue tracker: the cursor opens the composer and types, a real mouse takes over, then the demo resumes",
         width: 600,
         height: 600,

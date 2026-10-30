@@ -37,11 +37,6 @@ const nextConfig: NextConfig = {
         hostname: "diip3sh.github.io",
         pathname: "/exploded/assets/**",
       },
-      {
-        protocol: "https",
-        hostname: "raw.githubusercontent.com",
-        pathname: "/diip3sh/playthrou/main/.github/media/**",
-      },
     ],
   },
 }
