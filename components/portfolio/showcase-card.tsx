@@ -19,6 +19,10 @@ import type { ProjectShowcaseComponent } from "@/constants/types"
 import { useSound } from "@/hooks/use-sound"
 import { cn } from "@/lib/utils"
 import { clickSoftSound } from "@/sounds/click-soft"
+import {
+  LazyVideo,
+  NEAR_VIEWPORT_ROOT_MARGIN,
+} from "@/components/portfolio/lazy-video"
 import { MediaPlaceholder } from "@/components/portfolio/media-placeholder"
 
 type CopyStatus = "idle" | "copied" | "failed"
@@ -33,18 +37,12 @@ type ShowcaseMediaProps = ShowcaseCardProps & {
   resetSignal: number
 }
 
-type ShowcaseVideoMedia = Extract<
-  ProjectShowcaseComponent["media"],
-  { type: "video" }
->
-
 type ShowcaseComponentMedia = Extract<
   ProjectShowcaseComponent["media"],
   { type: "component" }
 >
 
 const COPY_STATUS_RESET_DELAY_MS = 1500
-const SHOWCASE_OBSERVER_ROOT_MARGIN = "700px"
 const SHOWCASE_PRELOAD_ROOT_MARGIN = "1600px"
 const HOVER_INSET_PX = 2
 const MEDIA_RADIUS_PX = 4
@@ -87,93 +85,6 @@ const placeholderHeightByComponentKey: Record<string, string> = {
   "set-timer": "min-h-[500px]",
   "theme-toggle": "min-h-[140px]",
   timezone: "min-h-[490px]",
-}
-
-const useIsNearViewport = <T extends HTMLElement>(
-  rootMargin = SHOWCASE_OBSERVER_ROOT_MARGIN
-) => {
-  const ref = useRef<T | null>(null)
-  const [isNearViewport, setIsNearViewport] = useState(false)
-
-  useEffect(() => {
-    const element = ref.current
-    if (!element) {
-      return
-    }
-
-    if (!("IntersectionObserver" in window)) {
-      setIsNearViewport(true)
-      return
-    }
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        setIsNearViewport(Boolean(entry?.isIntersecting))
-      },
-      { rootMargin }
-    )
-
-    observer.observe(element)
-
-    return () => {
-      observer.disconnect()
-    }
-  }, [rootMargin])
-
-  return [ref, isNearViewport] as const
-}
-
-const LazyShowcaseVideo = ({ media }: { media: ShowcaseVideoMedia }) => {
-  const videoRef = useRef<HTMLVideoElement | null>(null)
-  const [containerRef, isNearViewport] = useIsNearViewport<HTMLDivElement>()
-  const [isReady, setIsReady] = useState(false)
-
-  useEffect(() => {
-    const video = videoRef.current
-    if (!video) {
-      return
-    }
-
-    if (!isNearViewport) {
-      video.pause()
-      video.load()
-      setIsReady(false)
-      return
-    }
-
-    void video.play().catch(() => {
-      // Muted autoplay should pass, but browsers can still reject it.
-    })
-  }, [isNearViewport])
-
-  const aspectRatio =
-    media.width && media.height ? media.width / media.height : undefined
-
-  return (
-    <div
-      ref={containerRef}
-      className="relative overflow-hidden bg-portfolio-media"
-    >
-      <MediaPlaceholder variant="video" isVisible={!isReady} />
-      <video
-        ref={videoRef}
-        muted
-        loop
-        playsInline
-        preload="none"
-        poster={media.poster}
-        aria-label={media.alt}
-        onLoadedData={() => setIsReady(true)}
-        style={aspectRatio ? { aspectRatio } : undefined}
-        className={cn(
-          "duration-portfolio relative z-10 h-auto w-full object-cover transition-opacity ease-portfolio",
-          isReady ? "opacity-100" : "opacity-0"
-        )}
-      >
-        {isNearViewport ? <source src={media.src} /> : null}
-      </video>
-    </div>
-  )
 }
 
 const LazyShowcaseComponent = ({
@@ -224,7 +135,7 @@ const LazyShowcaseComponent = ({
         setIsNearViewport(true)
         renderObserver.disconnect()
       },
-      { rootMargin: SHOWCASE_OBSERVER_ROOT_MARGIN }
+      { rootMargin: NEAR_VIEWPORT_ROOT_MARGIN }
     )
 
     preloadObserver.observe(element)
@@ -276,7 +187,7 @@ const ShowcaseMedia = ({
   const { media } = item
 
   if (media.type === "video") {
-    return <LazyShowcaseVideo media={media} />
+    return <LazyVideo media={media} />
   }
 
   return (
