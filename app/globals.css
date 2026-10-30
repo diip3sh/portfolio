@@ -250,6 +250,21 @@
   animation: marquee 30s linear infinite;
 }
 
+@keyframes stagger-enter {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+}
+
+.stagger-item {
+  animation: stagger-enter 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.05s backwards;
+}
+
+.stagger-item:nth-child(2) {
+  animation-delay: 0.17s;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -258,5 +273,9 @@
     transition-duration: 0.01ms !important;
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
+  }
+
+  .stagger-item {
+    animation: none;
   }
 }
