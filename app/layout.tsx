@@ -83,15 +83,17 @@ const fontSans = Geist({
   variable: "--font-sans",
 })
 
+// Subset of the OTFs to Basic Latin, Latin-1, curly quotes, dashes, bullet,
+// ellipsis, and the right arrow. Add a glyph to the subset before using it.
 const commitMono = localFont({
   src: [
     {
-      path: "../public/fonts/CommitMono-400-Regular.otf",
+      path: "../public/fonts/CommitMono-400-Latin.woff2",
       weight: "400",
       style: "normal",
     },
     {
-      path: "../public/fonts/CommitMono-500-Regular.otf",
+      path: "../public/fonts/CommitMono-500-Latin.woff2",
       weight: "500",
       style: "normal",
     },

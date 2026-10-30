@@ -17,40 +17,40 @@ const cardClassName = cn(
 
 const fanCards: FanCard[] = [
   {
-    src: "https://images.pexels.com/photos/5995712/pexels-photo-5995712.jpeg",
+    src: "https://images.pexels.com/photos/5995712/pexels-photo-5995712.jpeg?auto=compress&cs=tinysrgb&w=480",
     alt: "Close-up portrait card",
     hoverClassName:
       "group-hover:[transform:rotate(-54deg)_translate(0px,-8px)]",
   },
   {
-    src: "https://images.pexels.com/photos/19259515/pexels-photo-19259515.jpeg",
+    src: "https://images.pexels.com/photos/19259515/pexels-photo-19259515.jpeg?auto=compress&cs=tinysrgb&w=480",
     alt: "Editorial portrait card",
     hoverClassName:
       "group-hover:[transform:rotate(-36deg)_translate(0px,-8px)]",
   },
   {
-    src: "https://images.pexels.com/photos/8765790/pexels-photo-8765790.jpeg",
+    src: "https://images.pexels.com/photos/8765790/pexels-photo-8765790.jpeg?auto=compress&cs=tinysrgb&w=480",
     alt: "Lifestyle portrait card",
     hoverClassName:
       "group-hover:[transform:rotate(-18deg)_translate(0px,-8px)]",
   },
   {
-    src: "https://images.pexels.com/photos/16611954/pexels-photo-16611954.jpeg",
+    src: "https://images.pexels.com/photos/16611954/pexels-photo-16611954.jpeg?auto=compress&cs=tinysrgb&w=480",
     alt: "Center portrait card",
     hoverClassName: "group-hover:[transform:rotate(0deg)_translate(0px,-8px)]",
   },
   {
-    src: "https://images.pexels.com/photos/2354863/pexels-photo-2354863.jpeg",
+    src: "https://images.pexels.com/photos/2354863/pexels-photo-2354863.jpeg?auto=compress&cs=tinysrgb&w=480",
     alt: "Outdoor portrait card",
     hoverClassName: "group-hover:[transform:rotate(18deg)_translate(0px,-8px)]",
   },
   {
-    src: "https://images.pexels.com/photos/28367850/pexels-photo-28367850.jpeg",
+    src: "https://images.pexels.com/photos/28367850/pexels-photo-28367850.jpeg?auto=compress&cs=tinysrgb&w=480",
     alt: "Fashion portrait card",
     hoverClassName: "group-hover:[transform:rotate(36deg)_translate(0px,-8px)]",
   },
   {
-    src: "https://images.pexels.com/photos/15295562/pexels-photo-15295562.jpeg",
+    src: "https://images.pexels.com/photos/15295562/pexels-photo-15295562.jpeg?auto=compress&cs=tinysrgb&w=480",
     alt: "Studio portrait card",
     hoverClassName: "group-hover:[transform:rotate(54deg)_translate(0px,-8px)]",
   },
