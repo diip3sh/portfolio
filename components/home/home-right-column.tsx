@@ -17,6 +17,7 @@ export const HomeRightColumn = ({
   return (
     <ScrollColumn
       ariaLabel="Project gallery"
+      persistKey="home-gallery"
       className="size-full bg-absolute-black md:h-dvh"
       contentClassName="flex w-full flex-col items-center gap-framer-10 px-framer-5 pt-[17px] pb-framer-10 md:pr-framer-5 md:pb-framer-5 md:pl-0"
       showProgress={false}

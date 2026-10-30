@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef, type ReactNode } from "react"
+import { useLayoutEffect, useRef, type ReactNode } from "react"
 
 import { ScrollProgress } from "@/components/portfolio/scroll-progress"
 
@@ -9,6 +9,9 @@ type ScrollColumnProps = {
   children: ReactNode
   className?: string
   contentClassName?: string
+  // Restores scroll when this column remounts. The browser only restores window
+  // scroll, not nested scrollers like this one.
+  persistKey?: string
   showProgress?: boolean
 }
 
@@ -17,9 +20,24 @@ export const ScrollColumn = ({
   children,
   className = "",
   contentClassName = "",
+  persistKey,
   showProgress = true,
 }: ScrollColumnProps) => {
   const scrollRef = useRef<HTMLDivElement>(null)
+
+  useLayoutEffect(() => {
+    const column = scrollRef.current
+    if (!column || !persistKey) {
+      return
+    }
+
+    const storageKey = `scroll-column:${persistKey}`
+    column.scrollTop = Number(sessionStorage.getItem(storageKey) ?? 0)
+
+    return () => {
+      sessionStorage.setItem(storageKey, String(column.scrollTop))
+    }
+  }, [persistKey])
 
   return (
     <div
